@@ -29,6 +29,10 @@ package com.gabstudios.cmdline;
  * @author Gregory Brown (sysdevone)
  */
 public class Token {
+
+    private static final String TYPE_ERROR_STRING = "The parameter 'type' must not be null";
+    private static final String VALUE_ERROR_STRING = "The parameter 'value' must not be null or empty";
+
     /*
      * The type of token.
      */
@@ -50,7 +54,7 @@ public class Token {
      * Constructor.
      */
     protected Token(final Type type) {
-        assert (type != null) : "The parameter 'type' must not be null";
+        assert (type != null) : TYPE_ERROR_STRING;
 
         this._type = type;
         this._value = null;
@@ -60,8 +64,8 @@ public class Token {
      * Constructor.
      */
     protected Token(final Type type, final String value) {
-        assert (type != null) : "The parameter 'type' must not be null";
-        assert (value != null && value.length() > 0) : "The parameter 'value' must not be null or empty";
+        assert (type != null) : TYPE_ERROR_STRING;
+        assert (value != null && value.length() > 0) : VALUE_ERROR_STRING;
 
         this._type = type;
         this._value = value;

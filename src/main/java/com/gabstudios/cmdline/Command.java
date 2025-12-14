@@ -32,6 +32,10 @@ import java.util.Map;
  * @author Gregory Brown (sysdevone)
  */
 public class Command {
+
+    private static final String NAME_ERROR_STRING = "The parameter 'name' must not be null or empty";
+    private static final String VALUE_ERROR_STRING = "The parameter 'value' must not be null or empty";
+
     /*
      * The name of the command
      */
@@ -50,7 +54,7 @@ public class Command {
      *            The name of the command.
      */
     protected Command(final String name) {
-        assert ((name != null) && (name.length() > 0)) : "The parameter 'name' must not be null or empty";
+        assert ((name != null) && (name.length() > 0)) : NAME_ERROR_STRING;
 
         this._name = name;
         this._variables = new HashMap<String, List>();
@@ -65,8 +69,8 @@ public class Command {
      *            The value associated with the name.
      */
     public void addVariable(final String name, final String value) {
-        assert ((name != null) && (name.length() > 0)) : "The parameter 'name' must not be null or empty";
-        assert ((value != null) && (value.length() > 0)) : "The parameter 'value' must not be null or empty";
+        assert ((name != null) && (name.length() > 0)) : NAME_ERROR_STRING;
+        assert ((value != null) && (value.length() > 0)) : VALUE_ERROR_STRING;
 
         List<String> variables;
         if (!this._variables.containsKey(name)) {
