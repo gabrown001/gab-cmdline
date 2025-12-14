@@ -8,6 +8,8 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
+    permissions:
+      contents: read
     name: Build and analyze
     runs-on: ubuntu-latest
     steps:
