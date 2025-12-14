@@ -20,10 +20,10 @@
 package com.gabstudios.cmdline;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -115,10 +115,10 @@ public class CmdLine {
      */
     static {
         WORD_SUGGESTION_TRIE = new LinkedHashMapTrie();
-        COMMAND_DEFINITION_MAP = new HashMap<String, CommandDefinition>();
-        VARIABLE_NAME_SET = new HashSet<String>();
+        COMMAND_DEFINITION_MAP = new HashMap<>();
+        VARIABLE_NAME_SET = new HashSet<>();
         DEFINED_COMMAND_TOKENIZER = new DefinedCommandTokenizer();
-        DEFAULT_COMMAND_LIST = new ArrayList<Command>();
+        DEFAULT_COMMAND_LIST = new ArrayList<>();
         INSTANCE = new CmdLine();
     }
 
@@ -203,7 +203,7 @@ public class CmdLine {
      */
     private static CommandDefinition createCommandDefinition(final List<Token> tokens) {
 
-        assert ((tokens != null) && (tokens.size() > 0)) : "The parameter 'tokens' must not be null or empty";
+        assert ((tokens != null) && (!tokens.isEmpty())) : "The parameter 'tokens' must not be null or empty";
         assert (tokens.size() <= CmdLine.MAX_LENGTH)
                 : "The parameter 'name' must be less than or equal to " + CmdLine.MAX_LENGTH;
 
@@ -409,7 +409,7 @@ public class CmdLine {
         final List<String> tokens = CmdLine.tokenize(args);
         CmdLine.processCmdLineTokens(tokens);
 
-        final List<Command> commands = new ArrayList<Command>(CmdLine.DEFAULT_COMMAND_LIST);
+        final List<Command> commands = new ArrayList<>(CmdLine.DEFAULT_COMMAND_LIST);
         return (commands);
     }
 
@@ -433,7 +433,7 @@ public class CmdLine {
      */
     private static void processCmdLineTokens(final List<String> tokens) {
 
-        assert ((tokens != null) && (tokens.size() > 0)) : "The parameter 'tokens' must not be null or empty";
+        assert ((tokens != null) && (!tokens.isEmpty())) : "The parameter 'tokens' must not be null or empty";
         assert (tokens.size() <= CmdLine.MAX_LENGTH)
                 : "The parameter 'tokens' must be less than or equal to " + CmdLine.MAX_LENGTH;
 
@@ -455,7 +455,7 @@ public class CmdLine {
             }
 
             // Have all tokens been consumed?
-            if (tokens.size() > 0) {
+            if (!tokens.isEmpty()) {
                 // Reclusive call and process the remaining
                 // tokens.
                 CmdLine.processCmdLineTokens(tokens);
@@ -484,6 +484,7 @@ public class CmdLine {
     /*
      * Processes the -D<property>=<value> and adds it to the System property.
      */
+    @SuppressWarnings("SizeReplaceableByIsEmpty")
     private static boolean processSystemProperty(final String valueString, final List<String> tokens) {
 
         boolean isSystemPropertyProcessed = false;
@@ -537,11 +538,11 @@ public class CmdLine {
             if (varName.contains(" ")) {
                 throw (new UnsupportedException("Error: The variable name '" + varName
                         + "' contains spaces which is not supported.  The definition may need a comma."));
-            } else if ((tokens.size() == 0) && !required) {
+            } else if ((tokens.isEmpty()) && !required) {
                 // if there isnt any info from the command line and this
                 // variable is not required then break and exit.
                 break;
-            } else if ((tokens.size() == 0) && required) {
+            } else if ((tokens.isEmpty()) && required) {
                 // if there isnt any info from the command line but this
                 // variable is required then throw exception.
                 throw (new MissingException(
@@ -590,7 +591,7 @@ public class CmdLine {
         if (varName.contains(" ")) {
             throw (new UnsupportedException("Error: The variable name '" + varName
                     + "' contains spaces which is not supported.  The definition may need a comma."));
-        } else if ((tokens.size() == 0) && required) {
+        } else if ((tokens.isEmpty()) && required) {
             // if there isnt any info from the command line but this
             // variable is required then throw exception.
             throw (new MissingException("Error:  The value for the required variable '" + varName + "' is missing."));

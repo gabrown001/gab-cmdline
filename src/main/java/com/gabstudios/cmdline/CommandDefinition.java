@@ -40,9 +40,9 @@ public class CommandDefinition {
      * Constructor
      */
     protected CommandDefinition() {
-        this._names = new ArrayList<String>();
-        this._requiredVariables = new ArrayList<String>();
-        this._optionalVariables = new ArrayList<String>();
+        this._names = new ArrayList<>();
+        this._requiredVariables = new ArrayList<>();
+        this._optionalVariables = new ArrayList<>();
     }
 
     protected String getDescription() {
@@ -139,7 +139,7 @@ public class CommandDefinition {
     }
 
     protected boolean hasOptionalVariables() {
-        return (this._optionalVariables.size() > 0);
+        return (!this._optionalVariables.isEmpty());
     }
 
     protected boolean hasRequiredVariableLists() {
@@ -147,7 +147,7 @@ public class CommandDefinition {
     }
 
     protected boolean hasRequiredVariables() {
-        return (this._requiredVariables.size() > 0);
+        return (!this._requiredVariables.isEmpty());
     }
 
     protected void setDescription(final String description) {

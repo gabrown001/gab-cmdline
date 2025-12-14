@@ -79,7 +79,7 @@ public class LinkedHashMapTree<T> {
 
             this._tree = tree;
             this._data = data;
-            this._children = new java.util.LinkedHashMap<T, Node<T>>();
+            this._children = new java.util.LinkedHashMap<>();
         }
 
         /**
@@ -158,7 +158,7 @@ public class LinkedHashMapTree<T> {
          */
         public List<Node<T>> getChildren() {
             final Collection<Node<T>> childNodes = this._children.values();
-            final List<Node<T>> children = new ArrayList<Node<T>>(childNodes);
+            final List<Node<T>> children = new ArrayList<>(childNodes);
             return (children);
         }
 
@@ -334,7 +334,7 @@ public class LinkedHashMapTree<T> {
      */
     protected Node<T> createNode(final T data) {
         assert (data != null) : "Not able to create Node.  The parameter 'data' should not be null.";
-        final Node<T> node = new Node<T>(this, data);
+        final Node<T> node = new Node<>(this, data);
         return (node);
     }
 
@@ -353,7 +353,7 @@ public class LinkedHashMapTree<T> {
      * @return A <code>List</code> instance containing the data.
      */
     public List<T> getLeafData() {
-        final LinkedList<T> data = new LinkedList<T>();
+        final LinkedList<T> data = new LinkedList<>();
         this._root.getLeafData(data);
         return (data);
     }

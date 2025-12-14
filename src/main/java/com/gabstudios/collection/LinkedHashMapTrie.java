@@ -181,10 +181,10 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
             }
         }
 
-        final Stack<TrieNode> stack = new Stack<TrieNode>();
+        final Stack<TrieNode> stack = new Stack<>();
         stack.push(node);
 
-        final Stack<String> prefixStack = new Stack<String>();
+        final Stack<String> prefixStack = new Stack<>();
         prefixStack.push(prefixWord.toString());
 
         while (!stack.isEmpty()) {
@@ -219,21 +219,20 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
             throw new IllegalArgumentException("word cannot be null or empty");
 
         boolean isContained = false;
-        if (word != null && word.length() > 0) {
-            final int count = word.length();
-            TrieNode node = (TrieNode) this.getRoot();
-            for (int i = 0; i < count; ++i) {
-                final char character = word.charAt(i);
-                if (node.containsChild(character)) {
-                    // if the character exists, then get that node.
-                    // continue walking down the tree character by character.
-                    node = (TrieNode) node.getChild(character);
-                    isContained = node._isWord;
-                } else {
-                    // if the character is not found. STOP.
-                    isContained = false;
-                    break;
-                }
+
+        final int count = word.length();
+        TrieNode node = (TrieNode) this.getRoot();
+        for (int i = 0; i < count; ++i) {
+            final char character = word.charAt(i);
+            if (node.containsChild(character)) {
+                // if the character exists, then get that node.
+                // continue walking down the tree character by character.
+                node = (TrieNode) node.getChild(character);
+                isContained = node._isWord;
+            } else {
+                // if the character is not found. STOP.
+                isContained = false;
+                break;
             }
         }
 
