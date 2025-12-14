@@ -1,6 +1,6 @@
 /*****************************************************************************************
  *
- * Copyright 2016 Gregory Brown. All Rights Reserved.
+ * Copyright 2016-2025 Gregory Brown. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -25,38 +25,31 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-
 /**
- * This class is the command that is created when the command line is parsed. It
- * is sent to the CommandListener.handle(Command command) method.
- *
- * It holds the name and variables of the command.
+ * This class is the command that is created when the command line is parsed. It is sent to the
+ * CommandListener.handle(Command command) method. It holds the name and variables of the command.
  *
  * @author Gregory Brown (sysdevone)
- *
  */
-public class Command
-{
+public class Command {
     /*
      * The name of the command
      */
-    protected String            _name;
+    protected String _name;
 
     /*
-     * The variables associated with the command. A variable has a name and
-     * value. The value is held in a <code>List</code> instance.
+     * The variables associated with the command. A variable has a name and value. The value is held in a
+     * <code>List</code> instance.
      */
     protected Map<String, List> _variables;
 
     /**
-     * A Command POJO. Associates a name and creates the data structure that
-     * holds the variables.F
+     * A Command POJO. Associates a name and creates the data structure that holds the variables.F
      *
      * @param name
      *            The name of the command.
      */
-    protected Command(final String name)
-    {
+    protected Command(final String name) {
         assert ((name != null) && (name.length() > 0)) : "The parameter 'name' must not be null or empty";
 
         this._name = name;
@@ -64,29 +57,24 @@ public class Command
     }
 
     /**
-     * Adds a variable to the Command. The value is added to a <code>List</code>
-     * .
+     * Adds a variable to the Command. The value is added to a <code>List</code> .
      *
      * @param name
      *            The name of the Variable. Must be unique.
      * @param value
      *            The value associated with the name.
      */
-    public void addVariable(final String name, final String value)
-    {
+    public void addVariable(final String name, final String value) {
         assert ((name != null) && (name.length() > 0)) : "The parameter 'name' must not be null or empty";
         assert ((value != null) && (value.length() > 0)) : "The parameter 'value' must not be null or empty";
 
         List<String> variables;
-        if (!this._variables.containsKey(name))
-        {
+        if (!this._variables.containsKey(name)) {
             // create list
             variables = new LinkedList<String>();
             this._variables.put(name, variables);
 
-        }
-        else
-        {
+        } else {
             variables = this._variables.get(name);
         }
         variables.add(value);
@@ -94,21 +82,27 @@ public class Command
 
     /*
      * (non-Javadoc)
-     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals(final Object obj)
-    {
-        if (this == obj) { return true; }
-        if (obj == null) { return false; }
-        if (this.getClass() != obj.getClass()) { return false; }
-        final Command other = (Command) obj;
-        if (this._name == null)
-        {
-            if (other._name != null) { return false; }
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
         }
-        else if (!this._name.equals(other._name)) { return false; }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final Command other = (Command) obj;
+        if (this._name == null) {
+            if (other._name != null) {
+                return false;
+            }
+        } else if (!this._name.equals(other._name)) {
+            return false;
+        }
         return true;
     }
 
@@ -117,8 +111,7 @@ public class Command
      *
      * @return A String name.
      */
-    public String getName()
-    {
+    public String getName() {
         return (this._name);
     }
 
@@ -127,54 +120,46 @@ public class Command
      *
      * @param name
      *            The name of the variable to get the values for.
+     *
      * @return A new List instance holding one to many Strings.
      */
-    public List<String> getValues(final String name)
-    {
+    public List<String> getValues(final String name) {
         final List<String> commandValues = this._variables.get(name);
 
         // wrap the values into another container so that it is immutable.
-        final List<String> values = (commandValues != null ? new ArrayList<String>(
-                commandValues) : new ArrayList<String>());
+        final List<String> values = (commandValues != null ? new ArrayList<String>(commandValues)
+                : new ArrayList<String>());
         return (values);
     }
 
     /*
      * (non-Javadoc)
-     *
      * @see java.lang.Object#hashCode()
      */
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = (prime * result)
-                + ((this._name == null) ? 0 : this._name.hashCode());
+        result = (prime * result) + ((this._name == null) ? 0 : this._name.hashCode());
         return result;
     }
 
     /**
      * A test to see if the Command has any variables associated with it.
      *
-     * @return A boolean value. True if the Command has variables, otherwise it
-     *         is false.F
+     * @return A boolean value. True if the Command has variables, otherwise it is false.F
      */
-    public boolean hasVariables()
-    {
+    public boolean hasVariables() {
         return (this._variables.size() > 0);
     }
 
     /*
      * (non-Javadoc)
-     *
      * @see java.lang.Object#toString()
      */
     @Override
-    public String toString()
-    {
-        return String.format("Command [_name=%s, _variables=%s]", this._name,
-                this._variables);
+    public String toString() {
+        return String.format("Command [_name=%s, _variables=%s]", this._name, this._variables);
     }
 
 }
