@@ -23,16 +23,6 @@ Maven Dependency
    <version>1.0.0-SNAPSHOT</version>
 </dependency>
 
-<dependency>
-   <groupId>com.gabstudios</groupId>
-   <artifactId>gab-collection</artifactId>
-   <version>1.0.0-SNAPSHOT</version>
-</dependency>
-<dependency>
-   <groupId>com.gabstudios</groupId>
-   <artifactId>gab-validate</artifactId>
-   <version>1.0.0</version>
-</dependency>
 ```
 
 
@@ -139,7 +129,7 @@ Feedback
 Comments and feedback are greatly appreciated!!!
 
 
-[Copyright 2016 2025 Gregory Brown]: https://github.com/gabrown001/gab-cmdline/tree/master/COPYRIGHT.txt
+[Copyright 2016-2025 Gregory Brown]: https://github.com/gabrown001/gab-cmdline/tree/master/COPYRIGHT.txt
 [Apache v2.0 License]: https://github.com/gabrown001/gab-cmdline/tree/master/LICENSE.txt
 [wiki]: https://github.com/gabrown001/gab-cmdline/wiki
 [examples]: https://github.com/gabrown001/gab-cmdline/wiki/Examples
