@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -21,48 +21,40 @@ package com.gabstudios.cmdline;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
- *
- * 
  * @author Gregory Brown (sysdevone)
- *
  */
-public class DefinedCommandTokenizerTest
-{
-    
+public class DefinedCommandTokenizerTest {
+
     DefinedCommandTokenizer _tokenizer;
-    
-    @Before
-    public void setUp()
-    {
+
+    @BeforeEach
+    public void setUp() {
         this._tokenizer = new DefinedCommandTokenizer();
     }
-    
-    @After
-    public void tearDown()
-    {
+
+    @AfterEach
+    public void tearDown() {
         this._tokenizer = null;
     }
-    
+
     @Test
-    public void testTokenizer()
-    { 
+    public void testTokenizer() {
         final String inputString = "file , !fileName1,:file\\d.txt, #Load a files into the system";
         final String[] inputTokens = inputString.split("\\s*,\\s*");
-        
+
         List<Token> tokens = this._tokenizer.tokenize(inputTokens);
-        
-        Assert.assertTrue(tokens.size() == 4);
-        Assert.assertTrue(tokens.get(0).getValue().equals("file"));
-        Assert.assertTrue(tokens.get(1).getValue().equals("fileName1"));
-        Assert.assertTrue(tokens.get(2).getValue().equals("file\\d.txt"));
-        Assert.assertTrue(tokens.get(3).getValue().equals("Load a files into the system"));
-        
+
+        Assertions.assertTrue(tokens.size() == 4);
+        Assertions.assertTrue(tokens.get(0).getValue().equals("file"));
+        Assertions.assertTrue(tokens.get(1).getValue().equals("fileName1"));
+        Assertions.assertTrue(tokens.get(2).getValue().equals("file\\d.txt"));
+        Assertions.assertTrue(tokens.get(3).getValue().equals("Load a files into the system"));
+
     }
 }

@@ -23,278 +23,247 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
- *
- *
  * @author Gregory Brown (sysdevone)
- *
  */
-public class CmdLineTest
-{
-    private class CmdLineListener implements CommandListener
-    {
-        
+public class CmdLineTest {
+    private class CmdLineListener implements CommandListener {
+
         private final Map<String, Command> _commandMap = new HashMap<String, Command>();
-        
-        public Command getCommand(final String name)
-        {
+
+        public Command getCommand(final String name) {
             return (this._commandMap.get(name));
         }
-        
-        public int getCount()
-        {
+
+        public int getCount() {
             return (this._commandMap.size());
         }
-        
+
         @Override
-        public void handle(final Command command)
-        {
+        public void handle(final Command command) {
             this._commandMap.put(command.getName(), command);
-            
+
             // System.out.println( command );
         }
     }
-    
-    @Before
-    public void setUp()
-    {
-        // void
+
+    @BeforeEach
+    public void setUp() {
     }
-    
-    @After
-    public void tearDown()
-    {
+
+    @AfterEach
+    public void tearDown() {
         CmdLine.clear();
     }
-    
+
     @Test
-    public void testDefineCommand()
-    {
-        
+    public void testDefineCommand() {
+
         final CmdLineListener listener = new CmdLineListener();
         CmdLine.setCommandListener(listener);
-        
+
         CmdLine.defineCommand("file , !fileName1,:file\\d.txt,       #Load files into the system");
-        
+
         final String[] args = new String[1];
         args[0] = "file=file1.txt";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args);
-            
-            Assert.assertTrue(listener.getCount() == 1);
-            
+
+            Assertions.assertTrue(listener.getCount() == 1);
+
             final Command command = listener.getCommand("file");
-            Assert.assertTrue(command != null);
-            
+            Assertions.assertTrue(command != null);
+
             final List<String> values = command.getValues("fileName1");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() > 0);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() > 0);
+
             final String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
-            Assert.assertTrue(true);
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
-        }
-        
+
     }
-    
+
     @Test
-    public void testDefineCommand1()
-    {
+    public void testDefineCommand1() {
         final CmdLineListener listener = new CmdLineListener();
         CmdLine.setCommandListener(listener);
-        
+
         CmdLine.defineCommand("file, !fileName1, :file\\d.txt, #Load a files into the system");
-        
+
         final String[] args = new String[1];
         args[0] = "file = file1.txt";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args);
-            
-            Assert.assertTrue(listener.getCount() == 1);
-            
+
+            Assertions.assertTrue(listener.getCount() == 1);
+
             final Command command = listener.getCommand("file");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             final List<String> values = command.getValues("fileName1");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() > 0);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() > 0);
+
             final String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
-            Assert.assertTrue(true);
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
-        }
-        
+
     }
-    
+
     @Test
-    public void testDefineCommand1a()
-    {
+    public void testDefineCommand1a() {
         final CmdLineListener listener = new CmdLineListener();
         CmdLine.setCommandListener(listener);
-        
-        CmdLine.defineCommand("-f, --file, !fileName1, ?fileName2, ?fileName3, :file\\d.txt, #Load a files into the system");
-        
+
+        CmdLine.defineCommand(
+                "-f, --file, !fileName1, ?fileName2, ?fileName3, :file\\d.txt, #Load a files into the system");
+
         final String[] args = new String[1];
         args[0] = "-f=file1.txt, file2.txt, file3.txt";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args);
-            
-            Assert.assertTrue(listener.getCount() == 1);
-            
+
+            Assertions.assertTrue(listener.getCount() == 1);
+
             final Command command = listener.getCommand("-f");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             List<String> values = command.getValues("fileName1");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
             values = command.getValues("fileName2");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file2.txt"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file2.txt"));
+
             values = command.getValues("fileName3");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file3.txt"));
-            
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file3.txt"));
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
     }
-    
+
     @Test
-    public void testDefineCommand1b()
-    {
+    public void testDefineCommand1b() {
         final CmdLineListener listener = new CmdLineListener();
         CmdLine.setCommandListener(listener);
-        
-        CmdLine.defineCommand("-f, --file, !fileName1, ?fileName2, ?fileName3, :file\\d.txt, #Load a files into the system");
-        
+
+        CmdLine.defineCommand(
+                "-f, --file, !fileName1, ?fileName2, ?fileName3, :file\\d.txt, #Load a files into the system");
+
         final String[] args = new String[3];
         args[0] = "-f";
         args[1] = "=";
         args[2] = "file1.txt";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args);
-            
-            Assert.assertTrue(listener.getCount() == 1);
-            
+
+            Assertions.assertTrue(listener.getCount() == 1);
+
             final Command command = listener.getCommand("-f");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             final List<String> values = command.getValues("fileName1");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() > 0);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() > 0);
+
             final String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
     }
-    
+
     @Test
-    public void testDefineCommand1c()
-    {
+    public void testDefineCommand1c() {
         final CmdLineListener listener = new CmdLineListener();
         CmdLine.setCommandListener(listener);
-        
+
         CmdLine.defineCommand("-f, --file, !fileName1, ?fileName2, ?fileName3, #Load a files into the system");
-        
+
         final String[] args = new String[3];
         args[0] = "-f";
         args[1] = "=";
         args[2] = "file1.txt";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args);
-            
-            Assert.assertTrue(listener.getCount() == 1);
-            
+
+            Assertions.assertTrue(listener.getCount() == 1);
+
             final Command command = listener.getCommand("-f");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             final List<String> values = command.getValues("fileName1");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             final String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
     }
-    
+
     @Test
-    public void testDefineCommand1d()
-    {
+    public void testDefineCommand1d() {
         final CmdLineListener listener = new CmdLineListener();
         CmdLine.setCommandListener(listener);
-        
+
         CmdLine.defineCommand("-f, --file, !fileName1, ?fileNames..., #Load a files into the system");
-        
+
         final String[] args = new String[7];
         args[0] = "-f";
         args[1] = "=";
@@ -303,56 +272,52 @@ public class CmdLineTest
         args[4] = "file2.txt";
         args[5] = ",";
         args[6] = "file3.txt";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args);
-            
-            Assert.assertTrue(listener.getCount() == 1);
-            
+
+            Assertions.assertTrue(listener.getCount() == 1);
+
             final Command command = listener.getCommand("-f");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             List<String> values = command.getValues("fileName1");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
             values = command.getValues("fileNames");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 2);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 2);
+
             value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file2.txt"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file2.txt"));
+
             value = values.get(1);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file3.txt"));
-            
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file3.txt"));
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
     }
-    
+
     @Test
-    public void testDefineCommand1e()
-    {
+    public void testDefineCommand1e() {
         final CmdLineListener listener = new CmdLineListener();
         CmdLine.setCommandListener(listener);
-        
+
         CmdLine.defineCommand("-f, --file, !fileName1, ?fileNames..., #Load a files into the system, file");
-        
+
         final String[] args = new String[7];
         args[0] = "file";
         args[1] = "=";
@@ -361,734 +326,690 @@ public class CmdLineTest
         args[4] = "file2.txt";
         args[5] = ",";
         args[6] = "file3.txt";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args);
-            
-            Assert.assertTrue(listener.getCount() == 1);
-            
+
+            Assertions.assertTrue(listener.getCount() == 1);
+
             final Command command = listener.getCommand("file");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             List<String> values = command.getValues("fileName1");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
             values = command.getValues("fileNames");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 2);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 2);
+
             value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file2.txt"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file2.txt"));
+
             value = values.get(1);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file3.txt"));
-            
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file3.txt"));
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
     }
-    
+
     @Test
-    public void testDefineCommand1f()
-    {
+    public void testDefineCommand1f() {
         final CmdLineListener listener = new CmdLineListener();
         CmdLine.setCommandListener(listener);
-        
+
         CmdLine.defineCommand("file, !file");
-        
+
         final String[] args = new String[3];
         args[0] = "file";
         args[1] = "=";
         args[2] = "file1.txt";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args);
-            
-            Assert.assertTrue(listener.getCount() == 1);
-            
+
+            Assertions.assertTrue(listener.getCount() == 1);
+
             final Command command = listener.getCommand("file");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             List<String> values = command.getValues("file");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
     }
-    
+
     @Test
-    public void testDefineCommand1g()
-    {
+    public void testDefineCommand1g() {
         final CmdLineListener listener = new CmdLineListener();
         CmdLine.setCommandListener(listener);
-        
+
         CmdLine.defineCommand("file, !file, !files...");
-        
+
         final String[] args = new String[5];
         args[0] = "file";
         args[1] = "=";
         args[2] = "file1.txt";
         args[3] = ",";
         args[4] = "file2.txt";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args);
-            
-            Assert.assertTrue(listener.getCount() == 1);
-            
+
+            Assertions.assertTrue(listener.getCount() == 1);
+
             final Command command = listener.getCommand("file");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             List<String> values = command.getValues("file");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
     }
-    
+
     @Test
-    public void testParseWithListener()
-    {
+    public void testParseWithListener() {
         final CmdLineListener listener = new CmdLineListener();
-        
+
         CmdLine.defineCommand("file, !file, !files...");
-        
+
         final String[] args = new String[5];
         args[0] = "file";
         args[1] = "=";
         args[2] = "file1.txt";
         args[3] = ",";
         args[4] = "file2.txt";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args, listener);
-            
-            Assert.assertTrue(listener.getCount() == 1);
-            
+
+            Assertions.assertTrue(listener.getCount() == 1);
+
             final Command command = listener.getCommand("file");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             List<String> values = command.getValues("file");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
     }
-    
+
     @Test
-    public void testChainingCommand()
-    {
+    public void testChainingCommand() {
         final CmdLineListener listener = new CmdLineListener();
-        
+
         final String[] args = new String[5];
         args[0] = "file";
         args[1] = "=";
         args[2] = "file1.txt";
         args[3] = ",";
         args[4] = "file2.txt";
-        
-        try
-        {
-            CmdLine.defineCommand("file, !file, !files...").parse(args,
-                    listener);
-            
-            Assert.assertTrue(listener.getCount() == 1);
-            
+
+        try {
+            CmdLine.defineCommand("file, !file, !files...").parse(args, listener);
+
+            Assertions.assertTrue(listener.getCount() == 1);
+
             final Command command = listener.getCommand("file");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             List<String> values = command.getValues("file");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
     }
-    
+
     @Test
-    public void testDefineMultipleCommand1()
-    {
+    public void testDefineMultipleCommand1() {
         final CmdLineListener listener = new CmdLineListener();
         CmdLine.setCommandListener(listener);
-        
+
         CmdLine.setVersion("1.1.0");
-        CmdLine.defineCommand("-f", "--file", "!fileNames...", ":file\\d.txt",
-                "#Load files into the system");
-        CmdLine.defineCommand("-l", "--list",
-                "#List the files loaded into the system");
+        CmdLine.defineCommand("-f", "--file", "!fileNames...", ":file\\d.txt", "#Load files into the system");
+        CmdLine.defineCommand("-l", "--list", "#List the files loaded into the system");
         CmdLine.defineCommand("-q", "--quit", "#Quit the application");
-        
+
         final String[] args = new String[4];
         args[0] = "-f";
         args[1] = "=";
         args[2] = "file1.txt";
         args[3] = "--list";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args);
-            
-            Assert.assertTrue(listener.getCount() == 2);
-            
+
+            Assertions.assertTrue(listener.getCount() == 2);
+
             Command command = listener.getCommand("-f");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             final List<String> values = command.getValues("fileNames");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             final String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
             command = listener.getCommand("--list");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(!command.hasVariables());
-            
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(!command.hasVariables());
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
     }
-    
+
     @Test
-    public void testDefineMultipleCommand2()
-    {
+    public void testDefineMultipleCommand2() {
         final CmdLineListener listener = new CmdLineListener();
-        CmdLine.setApplicationName("myApp")
-                .setVersion("1.1.0")
-                .defineCommand("-f", "--file", "!fileNames...", ":file\\d.txt",
-                        "#Load files into the system")
-                .defineCommand("-l", "--list",
-                        "#List the files loaded into the system")
+        CmdLine.setApplicationName("myApp").setVersion("1.1.0")
+                .defineCommand("-f", "--file", "!fileNames...", ":file\\d.txt", "#Load files into the system")
+                .defineCommand("-l", "--list", "#List the files loaded into the system")
                 .defineCommand("-q", "--quit", "#Quit the application");
-        
+
         final String[] args = new String[5];
         args[0] = "-f";
         args[1] = "=";
         args[2] = "file1.txt";
         args[3] = "-Dcom.gabsocial.cmdline.debug=true";
         args[4] = "--list";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args, listener);
-            
-            Assert.assertTrue(listener.getCount() == 3);
-            
+
+            Assertions.assertTrue(listener.getCount() == 3);
+
             Command command = listener.getCommand("-f");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             List<String> values = command.getValues("fileNames");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
             command = listener.getCommand("-Dcom.gabsocial.cmdline.debug");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             values = command.getValues("com.gabsocial.cmdline.debug");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("true"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("true"));
+
             command = listener.getCommand("--list");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(!command.hasVariables());
-            
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(!command.hasVariables());
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
     }
-    
+
     @Test
-    public void testDefineMultipleCommandWithDefaultListener()
-    {
-        CmdLine.setApplicationName("myApp")
-                .setVersion("1.1.0")
-                .defineCommand("-f", "--file", "!fileNames...", ":file\\d.txt",
-                        "#Load files into the system")
-                .defineCommand("-l", "--list",
-                        "#List the files loaded into the system")
+    public void testDefineMultipleCommandWithDefaultListener() {
+        CmdLine.setApplicationName("myApp").setVersion("1.1.0")
+                .defineCommand("-f", "--file", "!fileNames...", ":file\\d.txt", "#Load files into the system")
+                .defineCommand("-l", "--list", "#List the files loaded into the system")
                 .defineCommand("-q", "--quit", "#Quit the application");
-        
+
         final String[] args = new String[5];
         args[0] = "-f";
         args[1] = "=";
         args[2] = "file1.txt";
         args[3] = "-Dcom.gabsocial.cmdline.debug=true";
         args[4] = "--list";
-        
-        try
-        {
+
+        try {
             List<Command> commands = CmdLine.parse(args);
-            Assert.assertTrue(commands.size() == 3);
-            
-            for (Command command : commands)
-            {
+            Assertions.assertTrue(commands.size() == 3);
+
+            for (Command command : commands) {
                 final String name = command.getName();
                 // System.out.println( "'" + command + "'");
-                
-                if (name.equals("-f"))
-                {
-                    Assert.assertTrue(command != null);
-                    Assert.assertTrue(command.hasVariables());
-                    
+
+                if (name.equals("-f")) {
+                    Assertions.assertTrue(command != null);
+                    Assertions.assertTrue(command.hasVariables());
+
                     List<String> values = command.getValues("fileNames");
-                    Assert.assertTrue(values != null);
-                    Assert.assertTrue(values.size() == 1);
-                    
+                    Assertions.assertTrue(values != null);
+                    Assertions.assertTrue(values.size() == 1);
+
                     String value = values.get(0);
-                    Assert.assertTrue(value != null);
-                    Assert.assertTrue(value.length() > 0);
-                    Assert.assertTrue(value.equals("file1.txt"));
-                }
-                else if (name.equals("-Dcom.gabsocial.cmdline.debug"))
-                {
-                    Assert.assertTrue(command != null);
-                    Assert.assertTrue(command.hasVariables());
-                    
-                    List<String> values = command
-                            .getValues("com.gabsocial.cmdline.debug");
-                    Assert.assertTrue(values != null);
-                    Assert.assertTrue(values.size() == 1);
-                    
+                    Assertions.assertTrue(value != null);
+                    Assertions.assertTrue(value.length() > 0);
+                    Assertions.assertTrue(value.equals("file1.txt"));
+                } else if (name.equals("-Dcom.gabsocial.cmdline.debug")) {
+                    Assertions.assertTrue(command != null);
+                    Assertions.assertTrue(command.hasVariables());
+
+                    List<String> values = command.getValues("com.gabsocial.cmdline.debug");
+                    Assertions.assertTrue(values != null);
+                    Assertions.assertTrue(values.size() == 1);
+
                     String value = values.get(0);
-                    Assert.assertTrue(value != null);
-                    Assert.assertTrue(value.length() > 0);
-                    Assert.assertTrue(value.equals("true"));
-                }
-                else if (name.equals("--list"))
-                {
-                    Assert.assertTrue(command != null);
-                    Assert.assertTrue(!command.hasVariables());
+                    Assertions.assertTrue(value != null);
+                    Assertions.assertTrue(value.length() > 0);
+                    Assertions.assertTrue(value.equals("true"));
+                } else if (name.equals("--list")) {
+                    Assertions.assertTrue(command != null);
+                    Assertions.assertTrue(!command.hasVariables());
                 }
             }
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
             e.printStackTrace();
-            Assert.fail(e.toString());
+            Assertions.fail(e.toString());
         }
     }
-    
+
     @Test
-    public void testDefineMultipleCommandWithDefaultListenerAndSecondListener()
-    {
+    public void testDefineMultipleCommandWithDefaultListenerAndSecondListener() {
         final CmdLineListener listener = new CmdLineListener();
-        CmdLine.setApplicationName("myApp")
-                .setVersion("1.1.0")
-                .defineCommand("-f", "--file", "!fileNames...", ":file\\d.txt",
-                        "#Load files into the system")
-                .defineCommand("-l", "--list",
-                        "#List the files loaded into the system")
+        CmdLine.setApplicationName("myApp").setVersion("1.1.0")
+                .defineCommand("-f", "--file", "!fileNames...", ":file\\d.txt", "#Load files into the system")
+                .defineCommand("-l", "--list", "#List the files loaded into the system")
                 .defineCommand("-q", "--quit", "#Quit the application");
-        
+
         final String[] args = new String[5];
         args[0] = "-f";
         args[1] = "=";
         args[2] = "file1.txt";
         args[3] = "-Dcom.gabsocial.cmdline.debug=true";
         args[4] = "--list";
-        
-        try
-        {
+
+        try {
             List<Command> commands = CmdLine.parse(args, listener);
-            Assert.assertTrue(commands.size() == 3);
-            
-            for (Command command : commands)
-            {
+            Assertions.assertTrue(commands.size() == 3);
+
+            for (Command command : commands) {
                 final String name = command.getName();
                 // System.out.println( "'" + command + "'");
-                
-                if (name.equals("-f"))
-                {
-                    Assert.assertTrue(command != null);
-                    Assert.assertTrue(command.hasVariables());
-                    
+
+                if (name.equals("-f")) {
+                    Assertions.assertTrue(command != null);
+                    Assertions.assertTrue(command.hasVariables());
+
                     List<String> values = command.getValues("fileNames");
-                    Assert.assertTrue(values != null);
-                    Assert.assertTrue(values.size() == 1);
-                    
+                    Assertions.assertTrue(values != null);
+                    Assertions.assertTrue(values.size() == 1);
+
                     String value = values.get(0);
-                    Assert.assertTrue(value != null);
-                    Assert.assertTrue(value.length() > 0);
-                    Assert.assertTrue(value.equals("file1.txt"));
-                }
-                else if (name.equals("-Dcom.gabsocial.cmdline.debug"))
-                {
-                    Assert.assertTrue(command != null);
-                    Assert.assertTrue(command.hasVariables());
-                    
-                    List<String> values = command
-                            .getValues("com.gabsocial.cmdline.debug");
-                    Assert.assertTrue(values != null);
-                    Assert.assertTrue(values.size() == 1);
-                    
+                    Assertions.assertTrue(value != null);
+                    Assertions.assertTrue(value.length() > 0);
+                    Assertions.assertTrue(value.equals("file1.txt"));
+                } else if (name.equals("-Dcom.gabsocial.cmdline.debug")) {
+                    Assertions.assertTrue(command != null);
+                    Assertions.assertTrue(command.hasVariables());
+
+                    List<String> values = command.getValues("com.gabsocial.cmdline.debug");
+                    Assertions.assertTrue(values != null);
+                    Assertions.assertTrue(values.size() == 1);
+
                     String value = values.get(0);
-                    Assert.assertTrue(value != null);
-                    Assert.assertTrue(value.length() > 0);
-                    Assert.assertTrue(value.equals("true"));
-                }
-                else if (name.equals("--list"))
-                {
-                    Assert.assertTrue(command != null);
-                    Assert.assertTrue(!command.hasVariables());
+                    Assertions.assertTrue(value != null);
+                    Assertions.assertTrue(value.length() > 0);
+                    Assertions.assertTrue(value.equals("true"));
+                } else if (name.equals("--list")) {
+                    Assertions.assertTrue(command != null);
+                    Assertions.assertTrue(!command.hasVariables());
                 }
             }
-            
-            Assert.assertTrue(listener.getCount() == 3);
-            
+
+            Assertions.assertTrue(listener.getCount() == 3);
+
             Command command = listener.getCommand("-f");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             List<String> values = command.getValues("fileNames");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
             command = listener.getCommand("-Dcom.gabsocial.cmdline.debug");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             values = command.getValues("com.gabsocial.cmdline.debug");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("true"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("true"));
+
             command = listener.getCommand("--list");
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(!command.hasVariables());
-            
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(!command.hasVariables());
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
             e.printStackTrace();
-            Assert.fail(e.toString());
+            Assertions.fail(e.toString());
         }
     }
-    
+
     @Test
-    public void testSystemPropertyCommand1()
-    {
+    public void testSystemPropertyCommand1() {
         final CmdLineListener listener = new CmdLineListener();
         CmdLine.setCommandListener(listener);
-        
+
         CmdLine.setVersion("1.1.0");
-        
+
         final String[] args = new String[1];
         args[0] = "-Dcom.gabsocial.cmdline.debug=true";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args);
-            
-            final Command command = listener
-                    .getCommand("-Dcom.gabsocial.cmdline.debug");
-            
-            Assert.assertTrue(listener.getCount() == 1);
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
-            final List<String> values = command
-                    .getValues("com.gabsocial.cmdline.debug");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+
+            final Command command = listener.getCommand("-Dcom.gabsocial.cmdline.debug");
+
+            Assertions.assertTrue(listener.getCount() == 1);
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
+            final List<String> values = command.getValues("com.gabsocial.cmdline.debug");
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             final String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("true"));
-            
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("true"));
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
     }
-    
+
     @Test
-    public void testSystemPropertyCommand2()
-    {
+    public void testSystemPropertyCommand2() {
         final CmdLineListener listener = new CmdLineListener();
         CmdLine.setCommandListener(listener);
-        
+
         CmdLine.setVersion("1.1.0");
-        
+
         final String[] args = new String[4];
         args[0] = "-Dcom.gabsocial.cmdline.debug=true";
         args[1] = "-Dcom.gabsocial.cmdline.screen=true";
         args[2] = "-Dcom.gabsocial.cmdline.gfx=true";
         args[3] = "-Dcom.gabsocial.cmdline.load=true";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args);
-            
-            Assert.assertTrue(listener.getCount() == 4);
-            
-            final Command command = listener
-                    .getCommand("-Dcom.gabsocial.cmdline.debug");
-            
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
-            final List<String> values = command
-                    .getValues("com.gabsocial.cmdline.debug");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+
+            Assertions.assertTrue(listener.getCount() == 4);
+
+            final Command command = listener.getCommand("-Dcom.gabsocial.cmdline.debug");
+
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
+            final List<String> values = command.getValues("com.gabsocial.cmdline.debug");
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             final String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("true"));
-            
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("true"));
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
     };
-    
+
     @Test
-    public void testSystemPropertyCommand3()
-    {
+    public void testSystemPropertyCommand3() {
         final CmdLineListener listener = new CmdLineListener();
         CmdLine.setCommandListener(listener);
-        
+
         CmdLine.defineCommand("file, !file, !files..., :file\\d.txt");
-        
+
         CmdLine.setVersion("1.1.0");
-        
+
         final String[] args = new String[4];
         args[0] = "-Dcom.gabsocial.cmdline.debug=true";
         args[1] = "file";
         args[2] = "file1.txt";
         args[3] = "file2.txt";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args);
-            
-            Assert.assertTrue(listener.getCount() == 2);
-            
-            Command command = listener
-                    .getCommand("-Dcom.gabsocial.cmdline.debug");
-            
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
-            List<String> values = command
-                    .getValues("com.gabsocial.cmdline.debug");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+
+            Assertions.assertTrue(listener.getCount() == 2);
+
+            Command command = listener.getCommand("-Dcom.gabsocial.cmdline.debug");
+
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
+            List<String> values = command.getValues("com.gabsocial.cmdline.debug");
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("true"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("true"));
+
             command = listener.getCommand("file");
-            
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             values = command.getValues("file");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
             values = command.getValues("files");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file2.txt"));
-            
-            Assert.assertTrue(true);
-        }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file2.txt"));
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
     }
-    
+
     @Test
-    public void testSystemPropertyCommand4()
-    {
+    public void testSystemPropertyCommand4() {
         final CmdLineListener listener = new CmdLineListener();
-        
-        CmdLine.defineCommand("file, !file, !files..., :file\\d.txt")
-                .setApplicationName("myApp").setVersion("1.1.0");
-        
+
+        CmdLine.defineCommand("file, !file, !files..., :file\\d.txt").setApplicationName("myApp").setVersion("1.1.0");
+
         final String[] args = new String[5];
         args[0] = "-Dcom.gabsocial.cmdline.debug=true";
         args[1] = "file";
         args[2] = "file1.txt";
         args[3] = "file2.txt";
         args[4] = "-Dcom.gabsocial.cmdline.load=true";
-        
-        try
-        {
+
+        try {
             CmdLine.parse(args, listener);
-            
-            Assert.assertTrue(listener.getCount() == 3);
-            
-            Command command = listener
-                    .getCommand("-Dcom.gabsocial.cmdline.debug");
-            
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
-            List<String> values = command
-                    .getValues("com.gabsocial.cmdline.debug");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+
+            Assertions.assertTrue(listener.getCount() == 3);
+
+            Command command = listener.getCommand("-Dcom.gabsocial.cmdline.debug");
+
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
+            List<String> values = command.getValues("com.gabsocial.cmdline.debug");
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             String value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("true"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("true"));
+
             command = listener.getCommand("file");
-            
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             values = command.getValues("file");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file1.txt"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file1.txt"));
+
             values = command.getValues("files");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("file2.txt"));
-            
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("file2.txt"));
+
             command = listener.getCommand("-Dcom.gabsocial.cmdline.load");
-            
-            Assert.assertTrue(command != null);
-            Assert.assertTrue(command.hasVariables());
-            
+
+            Assertions.assertTrue(command != null);
+            Assertions.assertTrue(command.hasVariables());
+
             values = command.getValues("com.gabsocial.cmdline.load");
-            Assert.assertTrue(values != null);
-            Assert.assertTrue(values.size() == 1);
-            
+            Assertions.assertTrue(values != null);
+            Assertions.assertTrue(values.size() == 1);
+
             value = values.get(0);
-            Assert.assertTrue(value != null);
-            Assert.assertTrue(value.length() > 0);
-            Assert.assertTrue(value.equals("true"));
-            
-            Assert.assertTrue(true);
+            Assertions.assertTrue(value != null);
+            Assertions.assertTrue(value.length() > 0);
+            Assertions.assertTrue(value.equals("true"));
+
+            Assertions.assertTrue(true);
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
         }
-        catch (final Exception e)
-        {
-            Assert.fail(e.toString());
-        }
+    }
+
+    @Test
+    public void testTokenizer() {
+        // file=file1.txt
+        final String[] inputTokens = { "file=file1.txt" };
+
+        final List<String> tokens = CmdLine.tokenize(inputTokens);
+
+        Assertions.assertTrue(tokens.size() == 2);
+        Assertions.assertTrue(tokens.get(0).equals("file"));
+        Assertions.assertTrue(tokens.get(1).equals("file1.txt"));
+
+    }
+
+    @Test
+    public void testTokenizer2() {
+        // -file=file1,txt, file2.txt
+        final String[] inputTokens = { "-file=file1.txt,", "file2.txt" };
+
+        final List<String> tokens = CmdLine.tokenize(inputTokens);
+
+        Assertions.assertTrue(tokens.size() == 3);
+        Assertions.assertTrue(tokens.get(0).equals("-file"));
+        Assertions.assertTrue(tokens.get(1).equals("file1.txt"));
+        Assertions.assertTrue(tokens.get(2).equals("file2.txt"));
+
+    }
+
+    @Test
+    public void testTokenizer3() {
+        // -file=file1,txt, file2.txt -Dorg.gabsocial.cmdline.debug=true
+        final String[] inputTokens = { "-file", "file1.txt", "file2.txt", "-Dorg.gabsocial.cmdline.debug=true" };
+
+        final List<String> tokens = CmdLine.tokenize(inputTokens);
+
+        Assertions.assertTrue(tokens.size() == 5);
+        Assertions.assertTrue(tokens.get(0).equals("-file"));
+        Assertions.assertTrue(tokens.get(1).equals("file1.txt"));
+        Assertions.assertTrue(tokens.get(2).equals("file2.txt"));
+        Assertions.assertTrue(tokens.get(3).equals("-Dorg.gabsocial.cmdline.debug"));
+        Assertions.assertTrue(tokens.get(4).equals("true"));
     }
 }

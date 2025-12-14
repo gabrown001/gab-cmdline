@@ -10,7 +10,7 @@ Required
 ---------
 This project requires the following: 
 
-    * Java 8 or 11
+    * Java 17
     * Maven
 
 
@@ -23,21 +23,6 @@ Maven Dependency
    <version>1.0.0-SNAPSHOT</version>
 </dependency>
 
-<dependency>
-   <groupId>com.gabstudios</groupId>
-   <artifactId>gab-collection</artifactId>
-   <version>1.0.0-SNAPSHOT</version>
-</dependency>
-<dependency>
-   <groupId>com.gabstudios</groupId>
-   <artifactId>gab-logging</artifactId>
-   <version>1.0.0-SNAPSHOT</version>
-</dependency>
-<dependency>
-   <groupId>com.gabstudios</groupId>
-   <artifactId>gab-validate</artifactId>
-   <version>1.0.0</version>
-</dependency>
 ```
 
 
@@ -131,7 +116,7 @@ Check the project [wiki].
 
 Copyright
 -------
-[Copyright 2016 Gregory Brown]
+[Copyright 2016-2025 Gregory Brown]
 
 
 License
@@ -144,7 +129,7 @@ Feedback
 Comments and feedback are greatly appreciated!!!
 
 
-[Copyright 2016 2021 Gregory Brown]: https://github.com/gab-studios/gab-cmdline/tree/master/COPYRIGHT.txt
-[Apache v2.0 License]: https://github.com/gab-studios/gab-cmdline/tree/master/LICENSE.txt
-[wiki]: https://github.com/gab-studios/gab-cmdline/wiki
-[examples]: https://github.com/gab-studios/gab-cmdline/wiki/Examples
+[Copyright 2016-2025 Gregory Brown]: https://github.com/gabrown001/gab-cmdline/tree/master/COPYRIGHT.txt
+[Apache v2.0 License]: https://github.com/gabrown001/gab-cmdline/tree/master/LICENSE.txt
+[wiki]: https://github.com/gabrown001/gab-cmdline/wiki
+[examples]: https://github.com/gabrown001/gab-cmdline/wiki/Examples
