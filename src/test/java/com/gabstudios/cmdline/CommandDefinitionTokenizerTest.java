@@ -29,13 +29,13 @@ import org.junit.jupiter.api.Test;
 /**
  * @author Gregory Brown (sysdevone)
  */
-public class DefinedCommandTokenizerTest {
+public class CommandDefinitionTokenizerTest {
 
-    DefinedCommandTokenizer _tokenizer;
+    CommandDefinitionTokenizer _tokenizer;
 
     @BeforeEach
     public void setUp() {
-        this._tokenizer = new DefinedCommandTokenizer();
+        this._tokenizer = new CommandDefinitionTokenizer();
     }
 
     @AfterEach

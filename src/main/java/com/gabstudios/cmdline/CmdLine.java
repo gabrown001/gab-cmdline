@@ -72,7 +72,7 @@ public class CmdLine {
     /*
      * The tokenizer that handles the defineCommand(xxxx) method.
      */
-    private static final DefinedCommandTokenizer DEFINED_COMMAND_TOKENIZER;
+    private static final CommandDefinitionTokenizer DEFINED_COMMAND_TOKENIZER;
 
     /*
      * Support method chaining.
@@ -110,6 +110,10 @@ public class CmdLine {
      */
     private static final Trie WORD_SUGGESTION_TRIE;
 
+    private static final String NAME_NULL_EMPTY_ERROR = "The parameter 'name' must not be null or empty.";
+    private static final String NAME_LESS_EQUAL_ERROR = "The parameter 'name' must be less than or equal to "
+            + CmdLine.MAX_LENGTH;
+
     /**
      * The CmdLine constructor.
      */
@@ -117,7 +121,7 @@ public class CmdLine {
         WORD_SUGGESTION_TRIE = new LinkedHashMapTrie();
         COMMAND_DEFINITION_MAP = new HashMap<>();
         VARIABLE_NAME_SET = new HashSet<>();
-        DEFINED_COMMAND_TOKENIZER = new DefinedCommandTokenizer();
+        DEFINED_COMMAND_TOKENIZER = new CommandDefinitionTokenizer();
         DEFAULT_COMMAND_LIST = new ArrayList<>();
         INSTANCE = new CmdLine();
     }
@@ -126,7 +130,7 @@ public class CmdLine {
      * Adds variable name to existing set. If the name already exists, then the DuplicateException is thrown.
      */
     private static void addVariableName(final String name) {
-        assert ((name != null) && (name.length() > 0)) : "The parameter 'name' must not be null or empty";
+        assert ((name != null) && (name.length() > 0)) : NAME_NULL_EMPTY_ERROR;
         assert (name.length() <= CmdLine.MAX_LENGTH)
                 : "The parameter 'name' must be less than or equal to " + CmdLine.MAX_LENGTH;
 
@@ -157,12 +161,9 @@ public class CmdLine {
 
         assert ((commandName != null) && (commandName.length() > 0))
                 : "The parameter 'commandName' must not be null or empty";
-        assert (commandName.length() <= CmdLine.MAX_LENGTH)
-                : "The parameter 'name' must be less than or equal to " + CmdLine.MAX_LENGTH;
-
+        assert (commandName.length() <= CmdLine.MAX_LENGTH) : NAME_LESS_EQUAL_ERROR;
         assert (tokens != null) : "The parameter 'tokens' must not be null";
-        assert (tokens.size() <= CmdLine.MAX_LENGTH)
-                : "The parameter 'name' must be less than or equal to " + CmdLine.MAX_LENGTH;
+        assert (tokens.size() <= CmdLine.MAX_LENGTH) : NAME_LESS_EQUAL_ERROR;
 
         final Command command = new Command(commandName);
         if (!tokens.isEmpty()) {

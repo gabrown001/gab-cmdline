@@ -71,6 +71,11 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
 
     }
 
+    /*
+     * A reasonable max length for a word in the Trie.
+     */
+    private static final int MAX_WORD_LENGTH = 100;
+
     /**
      * Constructor. The root is the '*' character.
      */
@@ -95,10 +100,12 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
      */
     @Override
     public void add(final String word) {
-        if (word == null || word.isEmpty())
+        if (word == null || word.isEmpty()) {
             throw new IllegalArgumentException("word cannot be null or empty");
-
-        // TODO - what is the max length of a word?
+        }
+        if (word.length() > MAX_WORD_LENGTH) { // Enforce a reasonable max length
+            throw new IllegalArgumentException("word length exceeds maximum allowed (100 characters)");
+        }
 
         final int count = word.length();
         TrieNode node = (TrieNode) this.getRoot();
@@ -153,9 +160,12 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
      */
     @Override
     public List<String> getWords(final String prefix) {
-        if (prefix == null || prefix.isEmpty())
+        if (prefix == null || prefix.isEmpty()) {
             throw new IllegalArgumentException("prefix cannot be null or empty");
-        // TODO - add a max.
+        }
+        if (prefix.length() > MAX_WORD_LENGTH) { // Enforce a reasonable max length
+            throw new IllegalArgumentException("prefix length exceeds maximum allowed (100 characters)");
+        }
 
         // walk prefix to known set of nodes.
         // input helo

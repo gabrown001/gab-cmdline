@@ -32,14 +32,14 @@ import java.util.stream.Collectors;
  *
  * @author Gregory Brown (sysdevone)
  */
-public class DefinedCommandTokenizer {
+public class CommandDefinitionTokenizer {
 
     private static final int MAX_TOKEN_LENGTH = 1000; // Configurable max length for security
 
     /**
      * Protected constructor to prevent instantiation.
      */
-    protected DefinedCommandTokenizer() {
+    protected CommandDefinitionTokenizer() {
         // Do nothing
     }
 
@@ -62,18 +62,13 @@ public class DefinedCommandTokenizer {
             throw new IllegalArgumentException("Input string exceeds maximum length of " + MAX_TOKEN_LENGTH);
         }
 
-        switch (inputString.charAt(0)) {
-            case '#':
-                return new Token(Token.Type.DESCRIPTION, inputString.substring(1));
-            case '!':
-                return createValueToken(inputString, true);
-            case '?':
-                return createValueToken(inputString, false);
-            case ':':
-                return new Token(Token.Type.REGEX_VALUE, inputString.substring(1));
-            default:
-                return new Token(Token.Type.COMMAND, inputString);
-        }
+        return switch (inputString.charAt(0)) {
+            case '#' -> new Token(Token.Type.DESCRIPTION, inputString.substring(1));
+            case '!' -> createValueToken(inputString, true);
+            case '?' -> createValueToken(inputString, false);
+            case ':' -> new Token(Token.Type.REGEX_VALUE, inputString.substring(1));
+            default -> new Token(Token.Type.COMMAND, inputString);
+        };
     }
 
     /**
@@ -85,14 +80,9 @@ public class DefinedCommandTokenizer {
 
         Token.Type type;
         switch (required ? 1 : 0) {
-            case 1:
-                type = isList ? Token.Type.REQUIRED_LIST_VALUE : Token.Type.REQUIRED_VALUE;
-                break;
-            case 0:
-                type = isList ? Token.Type.OPTIONAL_LIST_VALUE : Token.Type.OPTIONAL_VALUE;
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value");
+            case 1 -> type = isList ? Token.Type.REQUIRED_LIST_VALUE : Token.Type.REQUIRED_VALUE;
+            case 0 -> type = isList ? Token.Type.OPTIONAL_LIST_VALUE : Token.Type.OPTIONAL_VALUE;
+            default -> throw new IllegalStateException("Unexpected value");
         }
 
         return new Token(type, value);
