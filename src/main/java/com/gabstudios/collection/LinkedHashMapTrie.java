@@ -71,6 +71,11 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
 
     }
 
+    /*
+     * A reasonable max length for a word in the Trie.
+     */
+    private static final int MAX_WORD_LENGTH = 100;
+
     /**
      * Constructor. The root is the '*' character.
      */
@@ -95,10 +100,12 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
      */
     @Override
     public void add(final String word) {
-        if (word == null || word.isEmpty())
+        if (word == null || word.isEmpty()) {
             throw new IllegalArgumentException("word cannot be null or empty");
-
-        // TODO - what is the max length of a word?
+        }
+        if (word.length() > MAX_WORD_LENGTH) { // Enforce a reasonable max length
+            throw new IllegalArgumentException("word length exceeds maximum allowed (100 characters)");
+        }
 
         final int count = word.length();
         TrieNode node = (TrieNode) this.getRoot();
@@ -153,9 +160,12 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
      */
     @Override
     public List<String> getWords(final String prefix) {
-        if (prefix == null || prefix.isEmpty())
+        if (prefix == null || prefix.isEmpty()) {
             throw new IllegalArgumentException("prefix cannot be null or empty");
-        // TODO - add a max.
+        }
+        if (prefix.length() > MAX_WORD_LENGTH) { // Enforce a reasonable max length
+            throw new IllegalArgumentException("prefix length exceeds maximum allowed (100 characters)");
+        }
 
         // walk prefix to known set of nodes.
         // input helo
@@ -181,10 +191,10 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
             }
         }
 
-        final Stack<TrieNode> stack = new Stack<TrieNode>();
+        final Stack<TrieNode> stack = new Stack<>();
         stack.push(node);
 
-        final Stack<String> prefixStack = new Stack<String>();
+        final Stack<String> prefixStack = new Stack<>();
         prefixStack.push(prefixWord.toString());
 
         while (!stack.isEmpty()) {
@@ -219,21 +229,20 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
             throw new IllegalArgumentException("word cannot be null or empty");
 
         boolean isContained = false;
-        if (word != null && word.length() > 0) {
-            final int count = word.length();
-            TrieNode node = (TrieNode) this.getRoot();
-            for (int i = 0; i < count; ++i) {
-                final char character = word.charAt(i);
-                if (node.containsChild(character)) {
-                    // if the character exists, then get that node.
-                    // continue walking down the tree character by character.
-                    node = (TrieNode) node.getChild(character);
-                    isContained = node._isWord;
-                } else {
-                    // if the character is not found. STOP.
-                    isContained = false;
-                    break;
-                }
+
+        final int count = word.length();
+        TrieNode node = (TrieNode) this.getRoot();
+        for (int i = 0; i < count; ++i) {
+            final char character = word.charAt(i);
+            if (node.containsChild(character)) {
+                // if the character exists, then get that node.
+                // continue walking down the tree character by character.
+                node = (TrieNode) node.getChild(character);
+                isContained = node._isWord;
+            } else {
+                // if the character is not found. STOP.
+                isContained = false;
+                break;
             }
         }
 

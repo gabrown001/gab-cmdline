@@ -59,7 +59,7 @@ public class UnsupportedException extends RuntimeException {
      */
     public UnsupportedException(final String message, final List<String> suggestionList) {
         super(message);
-        this._suggestionList = new ArrayList<String>(suggestionList);
+        this._suggestionList = new ArrayList<>(suggestionList);
     }
 
     /**

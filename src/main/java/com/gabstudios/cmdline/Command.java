@@ -57,7 +57,7 @@ public class Command {
         assert ((name != null) && (name.length() > 0)) : NAME_ERROR_STRING;
 
         this._name = name;
-        this._variables = new HashMap<String, List>();
+        this._variables = new HashMap<>();
     }
 
     /**
@@ -75,7 +75,7 @@ public class Command {
         List<String> variables;
         if (!this._variables.containsKey(name)) {
             // create list
-            variables = new LinkedList<String>();
+            variables = new LinkedList<>();
             this._variables.put(name, variables);
 
         } else {
@@ -131,8 +131,7 @@ public class Command {
         final List<String> commandValues = this._variables.get(name);
 
         // wrap the values into another container so that it is immutable.
-        final List<String> values = (commandValues != null ? new ArrayList<String>(commandValues)
-                : new ArrayList<String>());
+        final List<String> values = (commandValues != null ? new ArrayList<>(commandValues) : new ArrayList<>());
         return (values);
     }
 
@@ -154,7 +153,7 @@ public class Command {
      * @return A boolean value. True if the Command has variables, otherwise it is false.F
      */
     public boolean hasVariables() {
-        return (this._variables.size() > 0);
+        return (!this._variables.isEmpty());
     }
 
     /*
