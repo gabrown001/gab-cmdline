@@ -24,6 +24,7 @@ package com.gabstudios.cmdline;
  *
  * @author G Brown
  */
+@FunctionalInterface
 public interface CommandListener {
     /**
      * Called by the parser each time a {@link Command} is successfully created from the command line arguments.
@@ -31,5 +32,5 @@ public interface CommandListener {
      * @param command
      *            The {@link Command} that was parsed. Contains the command name and any associated variable values.
      */
-    public void handle(Command command);
+    void handle(Command command);
 }

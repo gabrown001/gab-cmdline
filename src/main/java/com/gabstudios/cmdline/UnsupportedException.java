@@ -50,12 +50,13 @@ public class UnsupportedException extends RuntimeException {
     }
 
     /**
-     * Constructor that takes a message.
+     * Constructor that takes a message and a list of suggested alternatives.
      *
      * @param message
      *            A <code>String</code> message.
      * @param suggestionList
-     *            A <code>List</code> of possible suggestions to return to the user if the command was misspelled
+     *            A <code>List</code> of command name suggestions to present to the user if the command was misspelled.
+     *            Must not be null.
      */
     public UnsupportedException(final String message, final List<String> suggestionList) {
         super(message);
@@ -65,7 +66,8 @@ public class UnsupportedException extends RuntimeException {
     /**
      * Gets a <code>List</code> of suggestion alternatives.
      *
-     * @return A <code>List</code> instance containing zero to many <code>String</code>instances.
+     * @return A <code>List</code> instance containing zero to many <code>String</code> instances. May be null if this
+     *         exception was created without a suggestion list.
      */
     public List<String> getSuggestionList() {
         return (this._suggestionList);

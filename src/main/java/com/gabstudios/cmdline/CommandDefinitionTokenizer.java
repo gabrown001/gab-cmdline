@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  */
 public class CommandDefinitionTokenizer {
 
-    private static final int MAX_TOKEN_LENGTH = 1000; // Configurable max length for security
+    private static final int MAX_TOKEN_LENGTH = 256;
 
     /**
      * Protected constructor to prevent instantiation.
@@ -79,10 +79,10 @@ public class CommandDefinitionTokenizer {
         String value = isList ? inputString.substring(1, inputString.length() - 3) : inputString.substring(1);
 
         Token.Type type;
-        switch (required ? 1 : 0) {
-            case 1 -> type = isList ? Token.Type.REQUIRED_LIST_VALUE : Token.Type.REQUIRED_VALUE;
-            case 0 -> type = isList ? Token.Type.OPTIONAL_LIST_VALUE : Token.Type.OPTIONAL_VALUE;
-            default -> throw new IllegalStateException("Unexpected value");
+        if (required) {
+            type = isList ? Token.Type.REQUIRED_LIST_VALUE : Token.Type.REQUIRED_VALUE;
+        } else {
+            type = isList ? Token.Type.OPTIONAL_LIST_VALUE : Token.Type.OPTIONAL_VALUE;
         }
 
         return new Token(type, value);

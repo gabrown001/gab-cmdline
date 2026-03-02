@@ -37,7 +37,7 @@ public class MatchException extends RuntimeException {
      * @param message
      *            A <code>String</code> message.
      */
-    protected MatchException(final String message) {
+    public MatchException(final String message) {
         super(message);
     }
 }

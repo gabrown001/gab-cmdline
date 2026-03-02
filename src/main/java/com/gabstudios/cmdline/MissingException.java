@@ -37,7 +37,7 @@ public class MissingException extends RuntimeException {
      * @param message
      *            A <code>String</code> message.
      */
-    protected MissingException(final String message) {
+    public MissingException(final String message) {
         super(message);
     }
 }

@@ -46,9 +46,9 @@ import com.gabstudios.collection.Trie;
  * There can be zero to many defined. : = The regex value to match on for any values that are defined. There can be zero
  * to one defined. If a String does not use one of the above char, then it is considered a command.
  *
- * @see setCommandListener
- * @see defineCommand
- * @see parse
+ * @see CmdLine#setCommandListener(CommandListener)
+ * @see CmdLine#defineCommand(String)
+ * @see CmdLine#parse(String[])
  *
  * @author G Brown
  */
@@ -60,7 +60,7 @@ public class CmdLine {
     private static final Map<String, CommandDefinition> COMMAND_DEFINITION_MAP;
 
     /*
-     * The listener that will handle commands as they are processed, to the main cmdline class.
+     * Accumulates the Command instances produced during a parse() call.
      */
     private static final List<Command> DEFAULT_COMMAND_LIST;
 
@@ -124,9 +124,6 @@ public class CmdLine {
      */
     private static final Set<String> BLOCKED_KEY_PREFIXES = Set.of("java.", "javax.", "sun.", "jdk.", "com.sun.");
 
-    /**
-     * The CmdLine constructor.
-     */
     static {
         WORD_SUGGESTION_TRIE = new LinkedHashMapTrie();
         COMMAND_DEFINITION_MAP = new HashMap<>();
@@ -234,7 +231,7 @@ public class CmdLine {
             final Type type = token.getType();
             final String name = token.getValue();
             switch (type) {
-                case COMMAND: {
+                case COMMAND -> {
                     if (name.contains(" ")) {
                         throw (new UnsupportedException("Error: The command name '" + name
                                 + "' contains spaces which is not supported.  " + "The definition may need a comma."));
@@ -242,10 +239,8 @@ public class CmdLine {
                         command.addName(name);
                         CmdLine.WORD_SUGGESTION_TRIE.add(name);
                     }
-                    break;
                 }
-                case DESCRIPTION: {
-
+                case DESCRIPTION -> {
                     final String description = command.getDescription();
                     if ((description != null) && (description.length() > 0)) {
                         throw (new DuplicateException(
@@ -253,19 +248,16 @@ public class CmdLine {
                     } else {
                         command.setDescription(name);
                     }
-
-                    break;
                 }
-                case REGEX_VALUE: {
+                case REGEX_VALUE -> {
                     final String existingRegex = command.getRegexValue();
                     if ((existingRegex != null) && (existingRegex.length() > 0)) {
                         throw (new DuplicateException("Error: The regex '" + name + "' has already been defined."));
                     } else {
                         command.setRegexValue(name);
                     }
-                    break;
                 }
-                case REQUIRED_VALUE: {
+                case REQUIRED_VALUE -> {
                     if (isOptionalVarDefined) {
                         throw (new UnsupportedException(
                                 "Error: An optional variable has already been defined before this required variable.  "
@@ -274,9 +266,8 @@ public class CmdLine {
                         CmdLine.addVariableName(name);
                         command.addRequiredVariable(name);
                     }
-                    break;
                 }
-                case REQUIRED_LIST_VALUE: {
+                case REQUIRED_LIST_VALUE -> {
                     if (isOptionalVarDefined) {
                         throw (new UnsupportedException(
                                 "Error: An optional variable has already been defined before this required variable.  "
@@ -289,15 +280,13 @@ public class CmdLine {
                         CmdLine.addVariableName(name);
                         command.setRequiredVariableList(name);
                     }
-                    break;
                 }
-                case OPTIONAL_VALUE: {
+                case OPTIONAL_VALUE -> {
                     CmdLine.addVariableName(name);
                     command.addOptionalVariable(name);
                     isOptionalVarDefined = true;
-                    break;
                 }
-                case OPTIONAL_LIST_VALUE: {
+                case OPTIONAL_LIST_VALUE -> {
                     if (doesListExist) {
                         throw (new UnsupportedException("Error: A List has already been defined for '" + name
                                 + "'.  A command can only have one list defined. "));
@@ -307,12 +296,9 @@ public class CmdLine {
                         command.setOptionalVariableList(name);
                         isOptionalVarDefined = true;
                     }
-                    break;
                 }
-                default: {
-                    throw (new UnsupportedException(
-                            "Error:  Unknown token '" + name + "' is an unknown type ='" + type.name() + "')."));
-                }
+                default -> throw (new UnsupportedException(
+                        "Error:  Unknown token '" + name + "' is an unknown type ='" + type.name() + "')."));
             }
         }
 
@@ -330,7 +316,7 @@ public class CmdLine {
      * can be zero to many defined. ? = An optional value for the command name. There can be zero to many defined. : =
      * The regex value to match on for any values that are defined. There can be zero to one defined. ... = A value ends
      * with ... and is a list for the command name. There can be zero to one defined. This can be used with the ! and ?
-     * symbols If a token does not start with one of these tokens, then it is considered a command name. Exmaples:
+     * symbols If a token does not start with one of these tokens, then it is considered a command name. Examples:
      * "file, !fileName1, :file\\d.txt, #Load a files into the system" "-f, --file, !fileName1, ?fileName2, ?fileName3,
      * :file\\d.txt, #Load a files into the system" "-f, --file, !fileName1, ?fileNames..., #Load a files into the
      * system"
@@ -484,8 +470,7 @@ public class CmdLine {
 
             // Have all tokens been consumed?
             if (!tokens.isEmpty()) {
-                // Reclusive call and process the remaining
-                // tokens.
+                // Recursive call to process the remaining tokens.
                 CmdLine.processCmdLineTokens(tokens);
             }
 
@@ -604,14 +589,9 @@ public class CmdLine {
                 // System.out.println("processVariable: " + name + " : "
                 // + argToken + " = " + _variableNameSet);
 
-                boolean isMatch = true;
-                if (pattern != null) {
-                    final Matcher matcher = pattern.matcher(argToken);
-                    isMatch = matcher.matches();
-                    if (!isMatch) {
-                        throw (new MatchException("Error:  The value '" + argToken
-                                + "' does not match the expected pattern '" + pattern.toString() + "'."));
-                    }
+                if (pattern != null && !pattern.matcher(argToken).matches()) {
+                    throw (new MatchException("Error:  The value '" + argToken
+                            + "' does not match the expected pattern '" + pattern.toString() + "'."));
                 }
 
                 if (CmdLine.VARIABLE_NAME_SET.contains(varName)) {
@@ -675,9 +655,12 @@ public class CmdLine {
      * Sets the application name in the cmdline. To be used in the help menu - (future release).
      *
      * @param name
-     *            The name of the application.
+     *            The name of the application. Must not be null or empty, and must not exceed the maximum length.
      *
      * @return The CmdLine instance. Used for chaining calls.
+     *
+     * @throws IllegalArgumentException
+     *             if name is null, empty, or exceeds the maximum length.
      */
     public static CmdLine setApplicationName(final String name) {
         if (name == null || name.isEmpty() || name.length() > CmdLine.MAX_LENGTH) {
@@ -727,6 +710,9 @@ public class CmdLine {
      *            A String value. Must not be null or empty.
      *
      * @return The CmdLine instance. Used for chaining calls.
+     *
+     * @throws IllegalArgumentException
+     *             if version is null or empty.
      */
     public static CmdLine setVersion(final String version) {
         if (version == null || version.isEmpty()) {
@@ -738,7 +724,7 @@ public class CmdLine {
     }
 
     /*
-     * Converts the command line args.into String tokens.
+     * Converts the command line args into String tokens.
      */
     protected static List<String> tokenize(final String[] args) {
         assert (args != null && args.length > 0) : "The parameter 'args' must not be null or empty";

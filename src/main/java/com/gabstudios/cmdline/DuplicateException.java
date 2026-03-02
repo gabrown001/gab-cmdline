@@ -37,7 +37,7 @@ public class DuplicateException extends RuntimeException {
      * @param message
      *            A <code>String</code> message.
      */
-    protected DuplicateException(final String message) {
+    public DuplicateException(final String message) {
         super(message);
     }
 }

@@ -39,13 +39,13 @@ public class Command {
     /*
      * The name of the command
      */
-    protected String _name;
+    private final String _name;
 
     /*
      * The variables associated with the command. A variable has a name and value. The value is held in a
      * <code>List</code> instance.
      */
-    protected Map<String, List> _variables;
+    private final Map<String, List<String>> _variables;
 
     /**
      * A Command POJO. Associates a name and creates the data structure that holds the variables.
@@ -81,10 +81,8 @@ public class Command {
 
         List<String> variables;
         if (!this._variables.containsKey(name)) {
-            // create list
             variables = new LinkedList<>();
             this._variables.put(name, variables);
-
         } else {
             variables = this._variables.get(name);
         }
@@ -132,10 +130,7 @@ public class Command {
      */
     public List<String> getValues(final String name) {
         final List<String> commandValues = this._variables.get(name);
-
-        // wrap the values into another container so that it is immutable.
-        final List<String> values = (commandValues != null ? new ArrayList<>(commandValues) : new ArrayList<>());
-        return (values);
+        return (commandValues != null ? new ArrayList<>(commandValues) : new ArrayList<>());
     }
 
     @Override

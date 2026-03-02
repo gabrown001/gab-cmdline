@@ -173,7 +173,7 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
         // hello
         // Tests to see if the character exists in the tree.
         // -------------------
-        final LinkedList<String> data = new LinkedList<String>();
+        final LinkedList<String> data = new LinkedList<>();
 
         final StringBuilder prefixWord = new StringBuilder();
         final int count = prefix.length();
@@ -219,10 +219,6 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
         return (data);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.gabsocial.collection.Trie#contains(java.lang.String)
-     */
     @Override
     public boolean contains(String word) {
         if (word == null || word.isEmpty())
