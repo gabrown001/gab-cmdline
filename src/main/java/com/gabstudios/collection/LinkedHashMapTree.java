@@ -29,7 +29,7 @@ import java.util.List;
  * Duplicate siblings with the same value are not allowed. The order of when a child is added is maintained. A tree may
  * hold onto multiple nodes with the same data. A Node uses a hashmap to hold its children so the search is O(1).
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  *
  * @param <T>
  *            This defines the class type of the data.
@@ -39,7 +39,7 @@ public class LinkedHashMapTree<T> {
     /**
      * The node within a Tree.
      *
-     * @author Gregory Brown (sysdevone)
+     * @author G Brown
      *
      * @param <T>
      *            This defines the class type of the data.

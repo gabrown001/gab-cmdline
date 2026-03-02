@@ -22,7 +22,7 @@ package com.gabstudios.cmdline;
 /**
  * An exception that is used if a required token or arg is missing.
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public class MissingException extends RuntimeException {
 

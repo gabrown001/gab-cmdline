@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * A Trie interface.
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public abstract interface Trie {
     /**

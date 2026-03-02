@@ -558,7 +558,7 @@ public class CmdLineTest {
     @Test
     public void testDefineMultipleCommand2() {
         final CmdLineListener listener = new CmdLineListener();
-        CmdLine.setApplicationName("myApp").setVersion("1.1.0")
+        CmdLine.setApplicationName("myApp").setVersion("1.1.0").setSystemPropertiesEnabled(true)
                 .defineCommand("-f", "--file", "!fileNames...", ":file\\d.txt", "#Load files into the system")
                 .defineCommand("-l", "--list", "#List the files loaded into the system")
                 .defineCommand("-q", "--quit", "#Quit the application");
@@ -613,7 +613,7 @@ public class CmdLineTest {
 
     @Test
     public void testDefineMultipleCommandWithDefaultListener() {
-        CmdLine.setApplicationName("myApp").setVersion("1.1.0")
+        CmdLine.setApplicationName("myApp").setVersion("1.1.0").setSystemPropertiesEnabled(true)
                 .defineCommand("-f", "--file", "!fileNames...", ":file\\d.txt", "#Load files into the system")
                 .defineCommand("-l", "--list", "#List the files loaded into the system")
                 .defineCommand("-q", "--quit", "#Quit the application");
@@ -672,7 +672,7 @@ public class CmdLineTest {
     @Test
     public void testDefineMultipleCommandWithDefaultListenerAndSecondListener() {
         final CmdLineListener listener = new CmdLineListener();
-        CmdLine.setApplicationName("myApp").setVersion("1.1.0")
+        CmdLine.setApplicationName("myApp").setVersion("1.1.0").setSystemPropertiesEnabled(true)
                 .defineCommand("-f", "--file", "!fileNames...", ":file\\d.txt", "#Load files into the system")
                 .defineCommand("-l", "--list", "#List the files loaded into the system")
                 .defineCommand("-q", "--quit", "#Quit the application");
@@ -767,6 +767,7 @@ public class CmdLineTest {
         CmdLine.setCommandListener(listener);
 
         CmdLine.setVersion("1.1.0");
+        CmdLine.setSystemPropertiesEnabled(true);
 
         final String[] args = new String[1];
         args[0] = "-Dcom.gabsocial.cmdline.debug=true";
@@ -801,6 +802,7 @@ public class CmdLineTest {
         CmdLine.setCommandListener(listener);
 
         CmdLine.setVersion("1.1.0");
+        CmdLine.setSystemPropertiesEnabled(true);
 
         final String[] args = new String[4];
         args[0] = "-Dcom.gabsocial.cmdline.debug=true";
@@ -841,6 +843,7 @@ public class CmdLineTest {
         CmdLine.defineCommand("file, !file, !files..., :file\\d.txt");
 
         CmdLine.setVersion("1.1.0");
+        CmdLine.setSystemPropertiesEnabled(true);
 
         final String[] args = new String[4];
         args[0] = "-Dcom.gabsocial.cmdline.debug=true";
@@ -900,7 +903,8 @@ public class CmdLineTest {
     public void testSystemPropertyCommand4() {
         final CmdLineListener listener = new CmdLineListener();
 
-        CmdLine.defineCommand("file, !file, !files..., :file\\d.txt").setApplicationName("myApp").setVersion("1.1.0");
+        CmdLine.defineCommand("file, !file, !files..., :file\\d.txt").setApplicationName("myApp").setVersion("1.1.0")
+                .setSystemPropertiesEnabled(true);
 
         final String[] args = new String[5];
         args[0] = "-Dcom.gabsocial.cmdline.debug=true";

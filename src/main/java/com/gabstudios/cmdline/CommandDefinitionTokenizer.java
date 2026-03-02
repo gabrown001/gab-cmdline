@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * (or {@code ?...} for optional list) - {@code :} : Regex validation - No prefix: Command name Splits on {@code =} and
  * {@code ,} delimiters, prioritizing equals over commas.
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public class CommandDefinitionTokenizer {
 

@@ -26,7 +26,7 @@ package com.gabstudios.cmdline;
  * will be used to validate the data within a VALUE REQUIRED_LIST_VALUE = A required variable that will have one to many
  * values. OPTIONAL_LIST_VALUE = An optional variable that will have zero to many values.
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public class Token {
 

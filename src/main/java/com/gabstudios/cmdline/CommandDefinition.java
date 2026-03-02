@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * This class is a command definition. It is created when the CmdLine.defineCommand() is called.
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public class CommandDefinition {
     protected String _description;

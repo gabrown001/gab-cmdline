@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * An exception that is used if an action is not supported.
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public class UnsupportedException extends RuntimeException {
 

@@ -22,7 +22,7 @@ package com.gabstudios.cmdline;
 /**
  * An exception that is used if a command or variable are already defined.
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public class DuplicateException extends RuntimeException {
 

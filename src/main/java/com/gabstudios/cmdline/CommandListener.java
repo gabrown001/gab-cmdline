@@ -22,14 +22,14 @@ package com.gabstudios.cmdline;
 /**
  * This interface handles the <code>Command</code> instances that are processed when the parse(...) method is called.
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public interface CommandListener {
     /**
-     * Handles the parser callbacks when a Command is created.
+     * Called by the parser each time a {@link Command} is successfully created from the command line arguments.
      *
      * @param command
-     *            A Command instance.
+     *            The {@link Command} that was parsed. Contains the command name and any associated variable values.
      */
     public void handle(Command command);
 }

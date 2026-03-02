@@ -27,9 +27,9 @@ import java.util.Map;
 
 /**
  * This class is the command that is created when the command line is parsed. It is sent to the
- * CommandListener.handle(Command command) method. It holds the name and variables of the command.
+ * {@link CommandListener#handle(Command)} method. It holds the name and variables of the command.
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public class Command {
 
@@ -48,7 +48,7 @@ public class Command {
     protected Map<String, List> _variables;
 
     /**
-     * A Command POJO. Associates a name and creates the data structure that holds the variables.F
+     * A Command POJO. Associates a name and creates the data structure that holds the variables.
      *
      * @param name
      *            The name of the command.
@@ -61,16 +61,23 @@ public class Command {
     }
 
     /**
-     * Adds a variable to the Command. The value is added to a <code>List</code> .
+     * Adds a variable to the Command. The value is added to a <code>List</code>, allowing multiple values per name.
      *
      * @param name
-     *            The name of the Variable. Must be unique.
+     *            The name of the variable. Must not be null or empty.
      * @param value
-     *            The value associated with the name.
+     *            The value associated with the name. Must not be null or empty.
+     *
+     * @throws IllegalArgumentException
+     *             if name or value is null or empty.
      */
     public void addVariable(final String name, final String value) {
-        assert ((name != null) && (name.length() > 0)) : NAME_ERROR_STRING;
-        assert ((value != null) && (value.length() > 0)) : VALUE_ERROR_STRING;
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException(NAME_ERROR_STRING);
+        }
+        if (value == null || value.isEmpty()) {
+            throw new IllegalArgumentException(VALUE_ERROR_STRING);
+        }
 
         List<String> variables;
         if (!this._variables.containsKey(name)) {
@@ -84,10 +91,6 @@ public class Command {
         variables.add(value);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
@@ -111,9 +114,9 @@ public class Command {
     }
 
     /**
-     * Gets the name
+     * Gets the command name as it appeared on the command line (e.g. {@code "-f"}, {@code "--file"}).
      *
-     * @return A String name.
+     * @return The command name string. Never null.
      */
     public String getName() {
         return (this._name);
@@ -125,7 +128,7 @@ public class Command {
      * @param name
      *            The name of the variable to get the values for.
      *
-     * @return A new List instance holding one to many Strings.
+     * @return A new List instance holding the values. Returns an empty list if the variable name is not found.
      */
     public List<String> getValues(final String name) {
         final List<String> commandValues = this._variables.get(name);
@@ -135,10 +138,6 @@ public class Command {
         return (values);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -150,16 +149,12 @@ public class Command {
     /**
      * A test to see if the Command has any variables associated with it.
      *
-     * @return A boolean value. True if the Command has variables, otherwise it is false.F
+     * @return A boolean value. True if the Command has variables, otherwise it is false.
      */
     public boolean hasVariables() {
         return (!this._variables.isEmpty());
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return String.format("Command [_name=%s, _variables=%s]", this._name, this._variables);

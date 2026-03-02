@@ -50,7 +50,7 @@ import com.gabstudios.collection.Trie;
  * @see defineCommand
  * @see parse
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public class CmdLine {
 
@@ -114,6 +114,16 @@ public class CmdLine {
     private static final String NAME_LESS_EQUAL_ERROR = "The parameter 'name' must be less than or equal to "
             + CmdLine.MAX_LENGTH;
 
+    /*
+     * Controls whether -D<key>=<value> tokens are processed as System properties. Disabled by default.
+     */
+    private static boolean s_systemPropertiesEnabled = false;
+
+    /*
+     * Property key prefixes that may not be set via the command line.
+     */
+    private static final Set<String> BLOCKED_KEY_PREFIXES = Set.of("java.", "javax.", "sun.", "jdk.", "com.sun.");
+
     /**
      * The CmdLine constructor.
      */
@@ -141,12 +151,14 @@ public class CmdLine {
     }
 
     /**
-     * Clears the CmdLine and releases resources.
+     * Clears the CmdLine and releases resources. Resets all state including command definitions, the command listener,
+     * system properties support (disabled), and any previously parsed commands.
      *
      * @return The CmdLine instance. Used for chaining calls.
      */
     public static CmdLine clear() {
         CmdLine.s_commandListener = null;
+        CmdLine.s_systemPropertiesEnabled = false;
         CmdLine.COMMAND_DEFINITION_MAP.clear();
         CmdLine.VARIABLE_NAME_SET.clear();
         CmdLine.WORD_SUGGESTION_TRIE.clear();
@@ -350,21 +362,17 @@ public class CmdLine {
     }
 
     /**
-     * This method defines the command definitions expected in the parser. Call this method for each command that will
-     * be defined. A token must use one of these symbols in order for it to be recognized as that type: # = The
-     * description of the command. There may be zero to one defined. ! = A required value for the command name. There
-     * can be zero to many defined. ? = An optional value for the command name. There can be zero to many defined. : =
-     * The regex value to match on for any values that are defined. There can be zero to one defined. ... = A value ends
-     * with ... and is a list for the command name. There can be zero to one defined. This can be used with the ! and ?
-     * symbols If a token does not start with one of these tokens, then it is considered a command name. Exmaples:
-     * "file, !fileName1, :file\\d.txt, #Load a files into the system" "-f, --file, !fileName1, ?fileName2, ?fileName3,
-     * :file\\d.txt, #Load a files into the system" "-f, --file, !fileName1, ?fileNames..., #Load a files into the
-     * system"
+     * Convenience overload of {@link #defineCommand(String...)} that accepts a single comma-delimited string. The
+     * string is split on commas before processing, so {@code "-f, --file, !name, #desc"} is equivalent to calling
+     * {@code defineCommand("-f", "--file", "!name", "#desc")}.
      *
      * @param nameArgs
-     *            A comma delimited String containing values.
+     *            A comma-delimited string containing the command definition tokens.
      *
      * @return The CmdLine instance. Used for chaining calls.
+     *
+     * @throws IllegalArgumentException
+     *             if nameArgs is null, empty, or exceeds the maximum length.
      */
     public static CmdLine defineCommand(final String nameArgs) {
         if (nameArgs == null || nameArgs.isEmpty() || nameArgs.length() > CmdLine.MAX_LENGTH) {
@@ -400,7 +408,16 @@ public class CmdLine {
      * @param args
      *            The arguments from the command line.
      *
-     * @return The CmdLine instance. Used for chaining calls.
+     * @return A list of {@link Command} instances created from the parsed arguments.
+     *
+     * @throws IllegalArgumentException
+     *             if args is null, empty, or exceeds the maximum length.
+     * @throws UnsupportedException
+     *             if an unrecognized command token is encountered.
+     * @throws MissingException
+     *             if a required variable value is absent.
+     * @throws MatchException
+     *             if a value does not match the defined regex pattern.
      */
     public static List<Command> parse(final String[] args) {
         if (!(args != null && args.length > 0 && args.length <= CmdLine.MAX_LENGTH)) {
@@ -415,14 +432,24 @@ public class CmdLine {
     }
 
     /**
-     * Parse the command line arguments.
+     * Parse the command line arguments, notifying the provided listener for each command found.
      *
      * @param args
      *            The arguments from the command line.
      * @param commandListener
-     *            A listener that will handle the callbacks.
+     *            A {@link CommandListener} that will be called for each {@link Command} created during parsing. Must
+     *            not be null.
      *
-     * @return The CmdLine instance. Used for chaining calls.
+     * @return A list of {@link Command} instances created from the parsed arguments.
+     *
+     * @throws IllegalArgumentException
+     *             if args is null, empty, or exceeds the maximum length, or if commandListener is null.
+     * @throws UnsupportedException
+     *             if an unrecognized command token is encountered.
+     * @throws MissingException
+     *             if a required variable value is absent.
+     * @throws MatchException
+     *             if a value does not match the defined regex pattern.
      */
     public static List<Command> parse(final String[] args, final CommandListener commandListener) {
         CmdLine.setCommandListener(commandListener);
@@ -483,19 +510,43 @@ public class CmdLine {
     }
 
     /*
-     * Processes the -D<property>=<value> and adds it to the System property.
+     * Processes the -D<property>=<value> and adds it to the System property. Only runs when system property processing
+     * has been explicitly enabled via setSystemPropertiesEnabled(true).
      */
-    @SuppressWarnings("SizeReplaceableByIsEmpty")
     private static boolean processSystemProperty(final String valueString, final List<String> tokens) {
 
+        if (!CmdLine.s_systemPropertiesEnabled) {
+            return false;
+        }
+
         boolean isSystemPropertyProcessed = false;
-        if ((valueString != null) && (tokens != null) && (tokens.size() > 0)) {
+        if ((valueString != null) && (tokens != null) && !tokens.isEmpty()) {
             final int indexOfSystemProperty = valueString.indexOf("-D");
 
             if (indexOfSystemProperty > -1) {
                 final String systemPropertyKey = valueString.substring(indexOfSystemProperty + 2);
 
+                if (systemPropertyKey.isEmpty() || systemPropertyKey.length() > CmdLine.MAX_LENGTH) {
+                    throw new IllegalArgumentException(
+                            "Error: The -D property key must not be empty and must be less than or equal to "
+                                    + CmdLine.MAX_LENGTH + " characters.");
+                }
+
+                for (final String blockedPrefix : CmdLine.BLOCKED_KEY_PREFIXES) {
+                    if (systemPropertyKey.startsWith(blockedPrefix)) {
+                        throw new UnsupportedException(
+                                "Error: The -D property key '" + systemPropertyKey + "' uses a reserved prefix '"
+                                        + blockedPrefix + "' and cannot be set via the command line.");
+                    }
+                }
+
                 final String systemPropertyValue = tokens.remove(0);
+
+                if (systemPropertyValue.isEmpty() || systemPropertyValue.length() > CmdLine.MAX_LENGTH) {
+                    throw new IllegalArgumentException(
+                            "Error: The -D property value must not be empty and must be less than or equal to "
+                                    + CmdLine.MAX_LENGTH + " characters.");
+                }
 
                 isSystemPropertyProcessed = true;
                 System.setProperty(systemPropertyKey, systemPropertyValue);
@@ -506,8 +557,6 @@ public class CmdLine {
                 CmdLine.DEFAULT_COMMAND_LIST.add(command);
 
                 if (CmdLine.s_commandListener != null) {
-                    // TODO - thread call to remove from main thread. add
-                    // timeout for processing.
                     CmdLine.s_commandListener.handle(command);
                 }
             }
@@ -636,6 +685,21 @@ public class CmdLine {
         }
 
         CmdLine.s_applicationName = name;
+        return (CmdLine.INSTANCE);
+    }
+
+    /**
+     * Enables or disables automatic processing of {@code -D<key>=<value>} tokens as System properties. Disabled by
+     * default. When enabled, keys matching any prefix in {@code BLOCKED_KEY_PREFIXES} are rejected with an
+     * {@link UnsupportedException}.
+     *
+     * @param enabled
+     *            true to enable {@code -D} system property processing, false to disable.
+     *
+     * @return The CmdLine instance. Used for chaining calls.
+     */
+    public static CmdLine setSystemPropertiesEnabled(final boolean enabled) {
+        CmdLine.s_systemPropertiesEnabled = enabled;
         return (CmdLine.INSTANCE);
     }
 

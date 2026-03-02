@@ -22,7 +22,7 @@ package com.gabstudios.cmdline;
 /**
  * An exception that is used if a match fails when the regex value has been defined.
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public class MatchException extends RuntimeException {
 

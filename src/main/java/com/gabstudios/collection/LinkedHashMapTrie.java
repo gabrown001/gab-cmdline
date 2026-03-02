@@ -27,14 +27,14 @@ import java.util.Stack;
  * An implementation of a Trie. Create a dictionary of words by using the add(String word ) method. This can be used to
  * get words that are similar prefix by using the getWords( String prefix ) method.
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements Trie {
 
     /**
      * The node within a Tree that holds a <code>Character</code>.
      *
-     * @author Gregory Brown (sysdevone)
+     * @author G Brown
      */
     public static class TrieNode extends Node<Character> {
         /*
