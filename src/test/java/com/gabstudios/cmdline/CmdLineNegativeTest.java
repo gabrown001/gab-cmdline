@@ -253,4 +253,127 @@ public class CmdLineNegativeTest {
         }
     }
 
+    @Test
+    public void testDefineCommandNullStringThrowsIllegalArgumentException() {
+
+        try {
+            CmdLine.defineCommand((String) null);
+            Assertions.fail();
+        } catch (IllegalArgumentException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testParseNullArgsThrowsIllegalArgumentException() {
+
+        try {
+            CmdLine.parse(null);
+            Assertions.fail();
+        } catch (IllegalArgumentException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testParseEmptyArgsThrowsIllegalArgumentException() {
+
+        try {
+            CmdLine.parse(new String[0]);
+            Assertions.fail();
+        } catch (IllegalArgumentException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testSetApplicationNameNullThrowsIllegalArgumentException() {
+
+        try {
+            CmdLine.setApplicationName(null);
+            Assertions.fail();
+        } catch (IllegalArgumentException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testSetApplicationNameEmptyThrowsIllegalArgumentException() {
+
+        try {
+            CmdLine.setApplicationName("");
+            Assertions.fail();
+        } catch (IllegalArgumentException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testSetVersionNullThrowsIllegalArgumentException() {
+
+        try {
+            CmdLine.setVersion(null);
+            Assertions.fail();
+        } catch (IllegalArgumentException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testSetVersionEmptyThrowsIllegalArgumentException() {
+
+        try {
+            CmdLine.setVersion("");
+            Assertions.fail();
+        } catch (IllegalArgumentException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testParseValueDoesNotMatchRegexThrowsMatchException() {
+
+        CmdLine.defineCommand("file, !fileName, :file\\d.txt");
+
+        final String[] args = { "file=badvalue.txt" };
+        try {
+            CmdLine.parse(args);
+            Assertions.fail();
+        } catch (MatchException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testSystemPropertyDisabledByDefault() {
+
+        final String[] args = { "-Dcom.example.debug=true" };
+        try {
+            CmdLine.parse(args);
+            Assertions.fail();
+        } catch (UnsupportedException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testSystemPropertyBlockedJvmPrefixThrowsUnsupportedException() {
+
+        CmdLine.setSystemPropertiesEnabled(true);
+
+        final String[] args = { "-Djava.home=/usr/lib/jvm" };
+        try {
+            CmdLine.parse(args);
+            Assertions.fail();
+        } catch (UnsupportedException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testUnsupportedExceptionGetSuggestionListReturnsNullWithNoSuggestions() {
+        final UnsupportedException ex = new UnsupportedException("error");
+        Assertions.assertNull(ex.getSuggestionList());
+    }
+
 }

@@ -51,10 +51,31 @@ public class CommandDefinitionTokenizerTest {
         List<Token> tokens = this._tokenizer.tokenize(inputTokens);
 
         Assertions.assertTrue(tokens.size() == 4);
+        Assertions.assertEquals(Token.Type.COMMAND, tokens.get(0).getType());
         Assertions.assertTrue(tokens.get(0).getValue().equals("file"));
+        Assertions.assertEquals(Token.Type.REQUIRED_VALUE, tokens.get(1).getType());
         Assertions.assertTrue(tokens.get(1).getValue().equals("fileName1"));
+        Assertions.assertEquals(Token.Type.REGEX_VALUE, tokens.get(2).getType());
         Assertions.assertTrue(tokens.get(2).getValue().equals("file\\d.txt"));
+        Assertions.assertEquals(Token.Type.DESCRIPTION, tokens.get(3).getType());
         Assertions.assertTrue(tokens.get(3).getValue().equals("Load a files into the system"));
+    }
 
+    @Test
+    public void testTokenizerOptionalAndListTokenTypes() {
+        final String inputString = "cmd, ?optName, ?optNames..., !reqNames...";
+        final String[] inputTokens = inputString.split("\\s*,\\s*");
+
+        List<Token> tokens = this._tokenizer.tokenize(inputTokens);
+
+        Assertions.assertEquals(4, tokens.size());
+        Assertions.assertEquals(Token.Type.COMMAND, tokens.get(0).getType());
+        Assertions.assertEquals("cmd", tokens.get(0).getValue());
+        Assertions.assertEquals(Token.Type.OPTIONAL_VALUE, tokens.get(1).getType());
+        Assertions.assertEquals("optName", tokens.get(1).getValue());
+        Assertions.assertEquals(Token.Type.OPTIONAL_LIST_VALUE, tokens.get(2).getType());
+        Assertions.assertEquals("optNames", tokens.get(2).getValue());
+        Assertions.assertEquals(Token.Type.REQUIRED_LIST_VALUE, tokens.get(3).getType());
+        Assertions.assertEquals("reqNames", tokens.get(3).getValue());
     }
 }

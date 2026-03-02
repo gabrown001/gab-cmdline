@@ -1003,6 +1003,20 @@ public class CmdLineTest {
     }
 
     @Test
+    public void testClearResetsSystemPropertiesEnabled() {
+        CmdLine.setSystemPropertiesEnabled(true);
+        CmdLine.clear(); // should reset the flag to false
+
+        final String[] args = { "-Dcom.example.debug=true" };
+        try {
+            CmdLine.parse(args);
+            Assertions.fail();
+        } catch (final UnsupportedException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
+    @Test
     public void testTokenizer3() {
         // -file=file1,txt, file2.txt -Dorg.gabsocial.cmdline.debug=true
         final String[] inputTokens = { "-file", "file1.txt", "file2.txt", "-Dorg.gabsocial.cmdline.debug=true" };
