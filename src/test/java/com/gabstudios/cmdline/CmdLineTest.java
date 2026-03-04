@@ -1003,6 +1003,26 @@ public class CmdLineTest {
     }
 
     @Test
+    public void testParseDoesNotAccumulateCommandsAcrossCalls() {
+        CmdLine.defineCommand("-f, --file, !fileName");
+        CmdLine.defineCommand("-l, --list");
+
+        final String[] firstArgs = { "-f", "=", "file1.txt" };
+        final String[] secondArgs = { "--list" };
+
+        try {
+            final List<Command> firstResult = CmdLine.parse(firstArgs);
+            Assertions.assertEquals(1, firstResult.size());
+
+            final List<Command> secondResult = CmdLine.parse(secondArgs);
+            Assertions.assertEquals(1, secondResult.size());
+            Assertions.assertEquals("--list", secondResult.get(0).getName());
+        } catch (final Exception e) {
+            Assertions.fail(e.toString());
+        }
+    }
+
+    @Test
     public void testClearResetsSystemPropertiesEnabled() {
         CmdLine.setSystemPropertiesEnabled(true);
         CmdLine.clear(); // should reset the flag to false

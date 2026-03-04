@@ -45,7 +45,7 @@ public class UnsupportedException extends RuntimeException {
      * @param message
      *            A <code>String</code> message.
      */
-    protected UnsupportedException(final String message) {
+    public UnsupportedException(final String message) {
         super(message);
     }
 

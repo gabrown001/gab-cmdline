@@ -19,9 +19,10 @@
 
 package com.gabstudios.collection;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * An implementation of a Trie. Create a dictionary of words by using the add(String word ) method. This can be used to
@@ -191,21 +192,17 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
             }
         }
 
-        final Stack<TrieNode> stack = new Stack<>();
+        final Deque<TrieNode> stack = new ArrayDeque<>();
         stack.push(node);
 
-        final Stack<String> prefixStack = new Stack<>();
+        final Deque<String> prefixStack = new ArrayDeque<>();
         prefixStack.push(prefixWord.toString());
 
         while (!stack.isEmpty()) {
             final TrieNode stackNode = stack.pop();
-            String rootPrefix = null;
-            if (!stackNode.isEmpty()) {
-                rootPrefix = prefixStack.pop();
-                if (stackNode.isWord()) {
-                    data.add(rootPrefix);
-                }
-
+            final String rootPrefix = prefixStack.pop();
+            if (stackNode.isWord()) {
+                data.add(rootPrefix);
             }
 
             final List<Node<Character>> children = stackNode.getChildren();

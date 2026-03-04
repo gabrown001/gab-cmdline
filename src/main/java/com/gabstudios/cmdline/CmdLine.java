@@ -410,6 +410,7 @@ public class CmdLine {
             throw new IllegalArgumentException("Invalid arguments array");
         }
 
+        CmdLine.DEFAULT_COMMAND_LIST.clear();
         final List<String> tokens = CmdLine.tokenize(args);
         CmdLine.processCmdLineTokens(tokens);
 

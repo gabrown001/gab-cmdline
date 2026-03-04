@@ -285,8 +285,6 @@ public class LinkedHashMapTree<T> {
          * Sets the parent of the node. This is called when the addChild method is called.
          */
         private void setParent(final Node<T> parent) {
-            assert (parent != null) : "The parameter 'parent' should not be null.";
-            assert (parent.getData() != null) : "The parameter parent's data should not be null.";
             if (this._parent != null) {
                 this._parent.removeChild(this._data);
             }
