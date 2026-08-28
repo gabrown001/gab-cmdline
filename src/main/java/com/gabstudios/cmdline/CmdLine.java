@@ -164,7 +164,7 @@ public class CmdLine {
      * Clears the CmdLine and releases resources. Resets all state including command definitions, the command listener,
      * system properties support (disabled), and any previously parsed commands.
      *
-     * @return The CmdLine instance. Used for chaining calls.
+     * @return this parser, so calls can be chained.
      */
     public CmdLine clear() {
         this.commandListener = null;
@@ -339,7 +339,7 @@ public class CmdLine {
      * @param nameArgs
      *            An array of String containing values.
      *
-     * @return The CmdLine instance. Used for chaining calls.
+     * @return this parser, so calls can be chained.
      */
     public CmdLine defineCommand(final String... nameArgs) {
         if (!(nameArgs != null && nameArgs.length > 0 && nameArgs.length <= CmdLine.MAX_LENGTH)) {
@@ -379,7 +379,7 @@ public class CmdLine {
      * @param nameArgs
      *            A comma-delimited string containing the command definition tokens.
      *
-     * @return The CmdLine instance. Used for chaining calls.
+     * @return this parser, so calls can be chained.
      *
      * @throws IllegalArgumentException
      *             if nameArgs is null, empty, or exceeds the maximum length.
@@ -701,7 +701,7 @@ public class CmdLine {
      * @param name
      *            The name of the application. Must not be null or empty, and must not exceed the maximum length.
      *
-     * @return The CmdLine instance. Used for chaining calls.
+     * @return this parser, so calls can be chained.
      *
      * @throws IllegalArgumentException
      *             if name is null, empty, or exceeds the maximum length.
@@ -723,7 +723,7 @@ public class CmdLine {
      * @param enabled
      *            true to enable {@code -D} system property processing, false to disable.
      *
-     * @return The CmdLine instance. Used for chaining calls.
+     * @return this parser, so calls can be chained.
      */
     public CmdLine setSystemPropertiesEnabled(final boolean enabled) {
         this.systemPropertiesEnabled = enabled;
@@ -736,7 +736,7 @@ public class CmdLine {
      * @param commandListener
      *            A listener that will handle the callbacks.
      *
-     * @return The CmdLine instance. Used for chaining calls.
+     * @return this parser, so calls can be chained.
      */
     public CmdLine setCommandListener(final CommandListener commandListener) {
         if (commandListener == null) {
@@ -753,7 +753,7 @@ public class CmdLine {
      * @param version
      *            A String value. Must not be null or empty.
      *
-     * @return The CmdLine instance. Used for chaining calls.
+     * @return this parser, so calls can be chained.
      *
      * @throws IllegalArgumentException
      *             if version is null or empty.
