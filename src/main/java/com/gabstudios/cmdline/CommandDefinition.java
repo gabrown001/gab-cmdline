@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class is a command definition. It is created when the CmdLine.defineCommand() is called.
+ * This class is a command definition. It is created when {@link CmdLine#defineCommand(String)} is called.
  *
  * @author G Brown
  */

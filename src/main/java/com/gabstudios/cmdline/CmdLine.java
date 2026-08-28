@@ -35,20 +35,42 @@ import com.gabstudios.collection.LinkedHashMapTrie;
 import com.gabstudios.collection.Trie;
 
 /**
- * This class is the main command line parser. Steps to use parser. 1. Define your command definitions.
- * this.defineCommand("-l, --load, !fileName, #Load a files into the system") .defineCommand("-s, --save, #Save the
- * application"); .defineCommand("-q, --quit, #Quit the application"); 2. parse the command line arguments and assign a
- * listener for command definitions this.parse( args, listener ); or parse the command line arguments and get the
- * returned List of Command instances. List commands = this.parse( args ); 3. clear parser to release resources.
- * CmdLine.clear(); this.defineCommand("xxxx") uses a token based on the first char. If a String uses one of these
- * symbols then it is recognized as that type: # = The description of the command. There may be zero to one defined. ! =
- * A required value for the command name. There can be zero to many defined. ? = An optional value for the command name.
- * There can be zero to many defined. : = The regex value to match on for any values that are defined. There can be zero
- * to one defined. If a String does not use one of the above char, then it is considered a command.
+ * The command line parser.
+ * <p>
+ * Construct one, define the commands it should recognise, then parse. Instances share no state, so two parsers can
+ * coexist and a test can build one per case:
  *
- * @see CmdLine#setCommandListener(CommandListener)
+ * <pre>
+ * CmdLine cmdLine = new CmdLine();
+ * cmdLine.defineCommand("-l, --load, !fileName, #Load a file into the system")
+ *         .defineCommand("-s, --save, #Save the application").defineCommand("-q, --quit, #Quit the application");
+ *
+ * // Either hand each command to a listener as it is found...
+ * cmdLine.parse(args, listener);
+ *
+ * // ...or take the list back.
+ * List&lt;Command&gt; commands = cmdLine.parse(args);
+ * </pre>
+ * <p>
+ * A definition is split on commas, and each token is read by its first character:
+ * <ul>
+ * <li>{@code #} the description. Zero or one. In a single comma-delimited definition it runs to the end of the string,
+ * so it may itself contain commas and equals signs.</li>
+ * <li>{@code !} a required value. Zero to many, and all must precede any optional value.</li>
+ * <li>{@code ?} an optional value. Zero to many.</li>
+ * <li>{@code :} a regex every value of this command must match. Zero or one.</li>
+ * <li>A token starting with none of these is a command name. One command may have several.</li>
+ * </ul>
+ * <p>
+ * A value name is scoped to the command that declares it, so two commands may each take a {@code !file}, and values are
+ * read back by that name: {@code command.getValues("file")}.
+ * <p>
+ * An empty argument array yields an empty list rather than an error — running a tool with no arguments is its most
+ * common invocation. A listener passed to {@link #parse(String[], CommandListener)} applies to that call only.
+ *
  * @see CmdLine#defineCommand(String)
  * @see CmdLine#parse(String[])
+ * @see CmdLine#parse(String[], CommandListener)
  *
  * @author G Brown
  */
