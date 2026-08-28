@@ -19,6 +19,8 @@
 
 package com.gabstudios.cmdline;
 
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,13 +31,16 @@ import org.junit.jupiter.api.Test;
  */
 public class CmdLineNegativeTest {
 
+    private CmdLine cmdLine;
+
     @BeforeEach
     public void setUp() {
+        this.cmdLine = new CmdLine();
     }
 
     @AfterEach
     public void tearDown() {
-        CmdLine.clear();
+        this.cmdLine.clear();
     }
 
     @Test
@@ -43,7 +48,7 @@ public class CmdLineNegativeTest {
 
         try {
 
-            CmdLine.defineCommand("!fileName, ?fileName1, :file\\d.txt, #Load files into the system");
+            this.cmdLine.defineCommand("!fileName, ?fileName1, :file\\d.txt, #Load files into the system");
 
             Assertions.fail();
         } catch (MissingException e) {
@@ -56,7 +61,7 @@ public class CmdLineNegativeTest {
 
         try {
 
-            CmdLine.defineCommand("file, !fileName, ?fileName, :file\\d.txt, #Load files into the system");
+            this.cmdLine.defineCommand("file, !fileName, ?fileName, :file\\d.txt, #Load files into the system");
 
             Assertions.fail();
         } catch (DuplicateException e) {
@@ -69,7 +74,7 @@ public class CmdLineNegativeTest {
 
         try {
 
-            CmdLine.defineCommand("file, file, !fileName, :file\\d.txt, #Load files into the system");
+            this.cmdLine.defineCommand("file, file, !fileName, :file\\d.txt, #Load files into the system");
 
             Assertions.fail();
         } catch (DuplicateException e) {
@@ -82,7 +87,7 @@ public class CmdLineNegativeTest {
 
         try {
 
-            CmdLine.defineCommand("file, !fileName, :file\\d.txt, :file\\d.txt, #Load files into the system");
+            this.cmdLine.defineCommand("file, !fileName, :file\\d.txt, :file\\d.txt, #Load files into the system");
 
             Assertions.fail();
         } catch (DuplicateException e) {
@@ -95,8 +100,11 @@ public class CmdLineNegativeTest {
 
         try {
 
-            CmdLine.defineCommand(
-                    "file, !fileName, :file\\d.txt, #Load files into the system, #Load files into the system");
+            // Passed as separate tokens: within a single comma-delimited string
+            // the first '#' now begins a description that runs to the end, so a
+            // later '#' is part of that prose rather than a second description.
+            this.cmdLine.defineCommand("file", "!fileName", ":file\\d.txt", "#Load files into the system",
+                    "#Load files into the system");
 
             Assertions.fail();
         } catch (DuplicateException e) {
@@ -109,7 +117,7 @@ public class CmdLineNegativeTest {
 
         try {
 
-            CmdLine.defineCommand("file !fileName :file\\d.txt #Load files into the system");
+            this.cmdLine.defineCommand("file !fileName :file\\d.txt #Load files into the system");
 
             Assertions.fail();
         } catch (UnsupportedException e) {
@@ -122,7 +130,7 @@ public class CmdLineNegativeTest {
 
         try {
 
-            CmdLine.defineCommand("file, !fileNames..., ?fileNames...");
+            this.cmdLine.defineCommand("file, !fileNames..., ?fileNames...");
 
             Assertions.fail();
         } catch (UnsupportedException e) {
@@ -136,7 +144,7 @@ public class CmdLineNegativeTest {
 
         try {
 
-            CmdLine.defineCommand("file, ?fileNames..., !fileNames2...");
+            this.cmdLine.defineCommand("file, ?fileNames..., !fileNames2...");
 
             Assertions.fail();
         } catch (UnsupportedException e) {
@@ -147,7 +155,7 @@ public class CmdLineNegativeTest {
     @Test
     public void testDefineCommand8() {
 
-        CmdLine.defineCommand("file, !file1, !file2");
+        this.cmdLine.defineCommand("file, !file1, !file2");
 
         final String[] args = new String[3];
         args[0] = "file";
@@ -155,7 +163,7 @@ public class CmdLineNegativeTest {
         args[2] = "file1.txt";
 
         try {
-            CmdLine.parse(args);
+            this.cmdLine.parse(args);
 
             Assertions.fail();
         } catch (MissingException e) {
@@ -166,7 +174,7 @@ public class CmdLineNegativeTest {
     @Test
     public void testDefineCommand9() {
 
-        CmdLine.defineCommand("file, !file, !files...");
+        this.cmdLine.defineCommand("file, !file, !files...");
 
         final String[] args = new String[3];
         args[0] = "file";
@@ -174,7 +182,7 @@ public class CmdLineNegativeTest {
         args[2] = "file1.txt";
 
         try {
-            CmdLine.parse(args);
+            this.cmdLine.parse(args);
 
             Assertions.fail();
         } catch (MissingException e) {
@@ -185,7 +193,7 @@ public class CmdLineNegativeTest {
     @Test
     public void testDefineCommand10() {
 
-        CmdLine.defineCommand("file, !file");
+        this.cmdLine.defineCommand("file, !file");
 
         final String[] args = new String[3];
         args[0] = "install";
@@ -193,7 +201,7 @@ public class CmdLineNegativeTest {
         args[2] = "file1.txt";
 
         try {
-            CmdLine.parse(args);
+            this.cmdLine.parse(args);
 
             Assertions.fail();
         } catch (UnsupportedException e) {
@@ -206,7 +214,7 @@ public class CmdLineNegativeTest {
 
         try {
 
-            CmdLine.defineCommand("file, ?fileName1, !fileNames2");
+            this.cmdLine.defineCommand("file, ?fileName1, !fileNames2");
 
             Assertions.fail();
         } catch (UnsupportedException e) {
@@ -219,7 +227,7 @@ public class CmdLineNegativeTest {
 
         try {
 
-            CmdLine.defineCommand("");
+            this.cmdLine.defineCommand("");
 
             Assertions.fail();
         } catch (IllegalArgumentException e) {
@@ -232,7 +240,7 @@ public class CmdLineNegativeTest {
 
         try {
 
-            CmdLine.defineCommand();
+            this.cmdLine.defineCommand();
 
             Assertions.fail();
         } catch (IllegalArgumentException e) {
@@ -245,7 +253,7 @@ public class CmdLineNegativeTest {
 
         try {
 
-            CmdLine.defineCommand("    ");
+            this.cmdLine.defineCommand("    ");
 
             Assertions.fail();
         } catch (UnsupportedException e) {
@@ -257,29 +265,29 @@ public class CmdLineNegativeTest {
     public void testDefineCommandNullStringThrowsIllegalArgumentException() {
 
         try {
-            CmdLine.defineCommand((String) null);
+            this.cmdLine.defineCommand((String) null);
             Assertions.fail();
         } catch (IllegalArgumentException e) {
             Assertions.assertTrue(true);
         }
+    }
+
+    @Test
+    public void testParseEmptyArgsReturnsNoCommands() {
+
+        // Running a tool with no arguments is its most common invocation, so it
+        // yields no commands rather than an exception. An application that wants
+        // to show help then does not have to special-case it before calling.
+        final List<Command> commands = this.cmdLine.parse(new String[0]);
+        Assertions.assertNotNull(commands);
+        Assertions.assertTrue(commands.isEmpty());
     }
 
     @Test
     public void testParseNullArgsThrowsIllegalArgumentException() {
 
         try {
-            CmdLine.parse(null);
-            Assertions.fail();
-        } catch (IllegalArgumentException e) {
-            Assertions.assertTrue(true);
-        }
-    }
-
-    @Test
-    public void testParseEmptyArgsThrowsIllegalArgumentException() {
-
-        try {
-            CmdLine.parse(new String[0]);
+            this.cmdLine.parse(null);
             Assertions.fail();
         } catch (IllegalArgumentException e) {
             Assertions.assertTrue(true);
@@ -290,7 +298,7 @@ public class CmdLineNegativeTest {
     public void testSetApplicationNameNullThrowsIllegalArgumentException() {
 
         try {
-            CmdLine.setApplicationName(null);
+            this.cmdLine.setApplicationName(null);
             Assertions.fail();
         } catch (IllegalArgumentException e) {
             Assertions.assertTrue(true);
@@ -301,7 +309,7 @@ public class CmdLineNegativeTest {
     public void testSetApplicationNameEmptyThrowsIllegalArgumentException() {
 
         try {
-            CmdLine.setApplicationName("");
+            this.cmdLine.setApplicationName("");
             Assertions.fail();
         } catch (IllegalArgumentException e) {
             Assertions.assertTrue(true);
@@ -312,7 +320,7 @@ public class CmdLineNegativeTest {
     public void testSetVersionNullThrowsIllegalArgumentException() {
 
         try {
-            CmdLine.setVersion(null);
+            this.cmdLine.setVersion(null);
             Assertions.fail();
         } catch (IllegalArgumentException e) {
             Assertions.assertTrue(true);
@@ -323,7 +331,7 @@ public class CmdLineNegativeTest {
     public void testSetVersionEmptyThrowsIllegalArgumentException() {
 
         try {
-            CmdLine.setVersion("");
+            this.cmdLine.setVersion("");
             Assertions.fail();
         } catch (IllegalArgumentException e) {
             Assertions.assertTrue(true);
@@ -333,11 +341,11 @@ public class CmdLineNegativeTest {
     @Test
     public void testParseValueDoesNotMatchRegexThrowsMatchException() {
 
-        CmdLine.defineCommand("file, !fileName, :file\\d.txt");
+        this.cmdLine.defineCommand("file, !fileName, :file\\d.txt");
 
         final String[] args = { "file=badvalue.txt" };
         try {
-            CmdLine.parse(args);
+            this.cmdLine.parse(args);
             Assertions.fail();
         } catch (MatchException e) {
             Assertions.assertTrue(true);
@@ -349,7 +357,7 @@ public class CmdLineNegativeTest {
 
         final String[] args = { "-Dcom.example.debug=true" };
         try {
-            CmdLine.parse(args);
+            this.cmdLine.parse(args);
             Assertions.fail();
         } catch (UnsupportedException e) {
             Assertions.assertTrue(true);
@@ -359,11 +367,11 @@ public class CmdLineNegativeTest {
     @Test
     public void testSystemPropertyBlockedJvmPrefixThrowsUnsupportedException() {
 
-        CmdLine.setSystemPropertiesEnabled(true);
+        this.cmdLine.setSystemPropertiesEnabled(true);
 
         final String[] args = { "-Djava.home=/usr/lib/jvm" };
         try {
-            CmdLine.parse(args);
+            this.cmdLine.parse(args);
             Assertions.fail();
         } catch (UnsupportedException e) {
             Assertions.assertTrue(true);

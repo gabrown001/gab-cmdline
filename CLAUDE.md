@@ -34,24 +34,24 @@ Requirements: Java 17, Maven 3.9.0+
 
 ## Architecture Overview
 
-This is a lightweight Java command-line argument parser library (`com.gabstudios.cmdline`). The library uses a static-singleton pattern — `CmdLine` is a utility class with only static methods and a singleton `INSTANCE` for method chaining.
+This is a lightweight Java command-line argument parser library (`com.gabstudios.cmdline`). `CmdLine` is an ordinary class: construct one with `new CmdLine()` and call instance methods on it. Instances share no state, so two parsers can coexist and a test builds one per case rather than clearing a global.
 
 ### Parse Flow
 
-1. **Define**: Call `CmdLine.defineCommand("...")` to register command definitions. Each definition string is tokenized by `CommandDefinitionTokenizer` into `Token` objects. The resulting `CommandDefinition` is stored in a static `HashMap<String, CommandDefinition>`.
+1. **Define**: Call `cmdLine.defineCommand("...")` to register command definitions. Each definition string is split on commas **up to the first `#`**; everything from `#` onward is the description, kept whole. The tokens are turned into `Token` objects by `CommandDefinitionTokenizer` and the resulting `CommandDefinition` is stored in the instance's map.
 
-2. **Parse**: Call `CmdLine.parse(args)` or `CmdLine.parse(args, listener)`. The raw `String[]` args are split on `=` and `,` into a flat token list. Tokens are consumed recursively — the first token is matched against the command definition map, and subsequent tokens are consumed as variable values.
+2. **Parse**: Call `cmdLine.parse(args)` or `cmdLine.parse(args, listener)`. The raw `String[]` args are split on `=` and `,` into a flat token list. Tokens are consumed recursively — the first token is matched against the command definition map, and subsequent tokens are consumed as variable values. An **empty array yields an empty list**, not an exception: running a tool with no arguments is its most common invocation. A `listener` applies only to the parse it is passed to.
 
 3. **Output**: Returns a `List<Command>`, each `Command` holding its name and a `Map<String, List<String>>` of named variable values.
 
-4. **Clear**: Call `CmdLine.clear()` to reset all static state before reuse.
+4. **Clear**: Call `cmdLine.clear()` to reset one parser for reuse. Usually unnecessary — construct a new one instead.
 
 ### Definition Token Syntax (processed by `CommandDefinitionTokenizer`)
 
 | Prefix | Token Type | Notes |
 |--------|-----------|-------|
 | *(none)* | `COMMAND` | Command name (e.g., `-help`, `--file`) |
-| `#` | `DESCRIPTION` | Human-readable description; max one per command |
+| `#` | `DESCRIPTION` | Human-readable description; max one per command. In a single comma-delimited definition it runs to the end of the string, so it may contain commas and `=` |
 | `!` | `REQUIRED_VALUE` | Required variable; must precede optional variables |
 | `?` | `OPTIONAL_VALUE` | Optional variable |
 | `!name...` | `REQUIRED_LIST_VALUE` | Required variable that consumes remaining tokens |
@@ -60,7 +60,7 @@ This is a lightweight Java command-line argument parser library (`com.gabstudios
 
 ### Key Classes
 
-- **`CmdLine`** — Static entry point. Holds all state in static fields (definition map, variable name set, command list, trie for suggestions). Manages `-D<key>=<value>` system property syntax automatically.
+- **`CmdLine`** — The parser. Holds all state in instance fields (definition map, parsed command list, listener, application name, version, trie for suggestions). Manages `-D<key>=<value>` system property syntax automatically.
 - **`CommandDefinitionTokenizer`** — Converts `defineCommand()` string args into `Token` objects using prefix-based switching.
 - **`CommandDefinition`** — POJO storing names, required/optional variable lists, optional regex, and description for one logical command.
 - **`Command`** — POJO returned after parsing; holds the matched command name and a map of variable name → `List<String>` values.
@@ -75,10 +75,27 @@ Contains a general-purpose trie used internally for word suggestion when an unde
 - **`LinkedHashMapTree`** — Generic tree backed by `LinkedHashMap` for ordered children.
 - **`LinkedHashMapTrie`** — Implements `Trie` on top of `LinkedHashMapTree<Character>`. Each character is a tree node; `TrieNode.isWord()` marks word terminals.
 
-### Static State & Thread Safety
+### State & Thread Safety
 
-`CmdLine` is **not thread-safe** — all state (definition map, variable name set, parsed command list, command listener) lives in static fields. Always call `CmdLine.clear()` between test cases (tests use `@AfterEach` for this). The class is non-instantiable (private constructor).
+State lives on the instance, so two parsers are independent. A single instance is **not thread-safe** — its collections are unsynchronized — so do not share one across threads; give each thread its own.
+
+Tests construct a parser per case rather than clearing a global.
 
 ### Variable Name Uniqueness
 
-Variable names (from `!` and `?` tokens) are **globally unique across all commands** — tracked in a static `HashSet<String>`. Reusing the same variable name in different `defineCommand()` calls throws `DuplicateException`.
+Variable names (from `!` and `?` tokens) are unique **within one command**, not across all of them. Two commands may each declare a `!file`; declaring `!file` twice in one definition throws `DuplicateException`.
+
+Values are read back by variable name: `command.getValues("file")`.
+
+### Chaining
+
+`defineCommand` and the setters return the instance, so calls chain:
+
+```java
+CmdLine cmdLine = new CmdLine();
+cmdLine.defineCommand("-f, --file, !name, #Load a file")
+       .defineCommand("-s, --save, #Save the file")
+       .setApplicationName("mytool");
+```
+
+Because these are instance methods, chaining is clean under `-Xlint:static` — a consumer building with `-Werror` no longer has to break the chain apart.

@@ -28,6 +28,9 @@ import org.junit.jupiter.api.*;
  * @author Gregory Brown (sysdevone)
  */
 public class CmdlineNegativeWordSuggestionTest {
+
+    private CmdLine cmdLine;
+
     private class CmdLineListener implements CommandListener {
 
         private final Map<String, Command> _commandMap = new HashMap<String, Command>();
@@ -50,11 +53,12 @@ public class CmdlineNegativeWordSuggestionTest {
 
     @BeforeEach
     public void setUp() {
+        this.cmdLine = new CmdLine();
     }
 
     @AfterEach
     public void tearDown() {
-        CmdLine.clear();
+        this.cmdLine.clear();
     }
 
     @Test
@@ -62,15 +66,15 @@ public class CmdlineNegativeWordSuggestionTest {
 
         final CmdLineListener listener = new CmdLineListener();
 
-        CmdLine.setApplicationName("myApp").setVersion("1.1.0").defineCommand("file, !file, !files..., :file\\d.txt")
-                .defineCommand("help").defineCommand("quit").defineCommand("install, !installOption")
-                .defineCommand("info");
+        this.cmdLine.setApplicationName("myApp").setVersion("1.1.0")
+                .defineCommand("file, !file, !files..., :file\\d.txt").defineCommand("help").defineCommand("quit")
+                .defineCommand("install, !installOption").defineCommand("info");
 
         final String[] args = new String[1];
         args[0] = "inztolll";
 
         try {
-            CmdLine.parse(args, listener);
+            this.cmdLine.parse(args, listener);
 
             Assertions.fail();
         } catch (final UnsupportedException e) {
@@ -88,15 +92,15 @@ public class CmdlineNegativeWordSuggestionTest {
 
         final CmdLineListener listener = new CmdLineListener();
 
-        CmdLine.setApplicationName("myApp").setVersion("1.1.0").defineCommand("file, !file, !files..., :file\\d.txt")
-                .defineCommand("help").defineCommand("quit").defineCommand("install, !installOption")
-                .defineCommand("info");
+        this.cmdLine.setApplicationName("myApp").setVersion("1.1.0")
+                .defineCommand("file, !file, !files..., :file\\d.txt").defineCommand("help").defineCommand("quit")
+                .defineCommand("install, !installOption").defineCommand("info");
 
         final String[] args = new String[1];
         args[0] = "instolll";
 
         try {
-            CmdLine.parse(args, listener);
+            this.cmdLine.parse(args, listener);
 
             Assertions.fail();
         } catch (final UnsupportedException e) {
@@ -113,15 +117,15 @@ public class CmdlineNegativeWordSuggestionTest {
 
         final CmdLineListener listener = new CmdLineListener();
 
-        CmdLine.setApplicationName("myApp").setVersion("1.1.0").defineCommand("file, !file, !files..., :file\\d.txt")
-                .defineCommand("help").defineCommand("quit").defineCommand("install, !installOption")
-                .defineCommand("info");
+        this.cmdLine.setApplicationName("myApp").setVersion("1.1.0")
+                .defineCommand("file, !file, !files..., :file\\d.txt").defineCommand("help").defineCommand("quit")
+                .defineCommand("install, !installOption").defineCommand("info");
 
         final String[] args = new String[1];
         args[0] = "znstolll";
 
         try {
-            CmdLine.parse(args, listener);
+            this.cmdLine.parse(args, listener);
 
             Assertions.fail();
         } catch (final UnsupportedException e) {

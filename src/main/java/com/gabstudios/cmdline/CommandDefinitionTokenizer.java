@@ -101,10 +101,25 @@ public class CommandDefinitionTokenizer {
             return new ArrayList<>();
         }
 
-        return Arrays.stream(args).flatMap(arg -> Arrays.stream(arg.split("="))) // Split on '=', flatten
-                .flatMap(eqPart -> Arrays.stream(eqPart.split(","))) // Split on ',', flatten
-                .filter(s -> !s.isEmpty()) // Ignore empty strings
-                .map(s -> createToken(s)) // Create tokens (lambda for explicit type inference)
-                .collect(Collectors.toList());
+        // A description is not split. Everything after '#' is prose, and prose
+        // contains commas and equals signs; splitting it produced spurious
+        // command tokens from the tail of a sentence.
+        final List<Token> tokens = new ArrayList<>();
+        for (final String arg : args) {
+            if (arg == null) {
+                continue;
+            }
+            final String trimmed = arg.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            if (trimmed.charAt(0) == '#') {
+                tokens.add(createToken(trimmed));
+                continue;
+            }
+            Arrays.stream(trimmed.split("=")).flatMap(eqPart -> Arrays.stream(eqPart.split(","))).map(String::trim)
+                    .filter(s -> !s.isEmpty()).map(CommandDefinitionTokenizer::createToken).forEach(tokens::add);
+        }
+        return tokens;
     }
 }
