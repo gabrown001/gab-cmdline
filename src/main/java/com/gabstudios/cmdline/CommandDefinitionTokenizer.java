@@ -30,11 +30,11 @@ import java.util.stream.Collectors;
  * (or {@code ?...} for optional list) - {@code :} : Regex validation - No prefix: Command name Splits on {@code =} and
  * {@code ,} delimiters, prioritizing equals over commas.
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public class CommandDefinitionTokenizer {
 
-    private static final int MAX_TOKEN_LENGTH = 1000; // Configurable max length for security
+    private static final int MAX_TOKEN_LENGTH = 256;
 
     /**
      * Protected constructor to prevent instantiation.
@@ -79,10 +79,10 @@ public class CommandDefinitionTokenizer {
         String value = isList ? inputString.substring(1, inputString.length() - 3) : inputString.substring(1);
 
         Token.Type type;
-        switch (required ? 1 : 0) {
-            case 1 -> type = isList ? Token.Type.REQUIRED_LIST_VALUE : Token.Type.REQUIRED_VALUE;
-            case 0 -> type = isList ? Token.Type.OPTIONAL_LIST_VALUE : Token.Type.OPTIONAL_VALUE;
-            default -> throw new IllegalStateException("Unexpected value");
+        if (required) {
+            type = isList ? Token.Type.REQUIRED_LIST_VALUE : Token.Type.REQUIRED_VALUE;
+        } else {
+            type = isList ? Token.Type.OPTIONAL_LIST_VALUE : Token.Type.OPTIONAL_VALUE;
         }
 
         return new Token(type, value);
@@ -101,10 +101,25 @@ public class CommandDefinitionTokenizer {
             return new ArrayList<>();
         }
 
-        return Arrays.stream(args).flatMap(arg -> Arrays.stream(arg.split("="))) // Split on '=', flatten
-                .flatMap(eqPart -> Arrays.stream(eqPart.split(","))) // Split on ',', flatten
-                .filter(s -> !s.isEmpty()) // Ignore empty strings
-                .map(s -> createToken(s)) // Create tokens (lambda for explicit type inference)
-                .collect(Collectors.toList());
+        // A description is not split. Everything after '#' is prose, and prose
+        // contains commas and equals signs; splitting it produced spurious
+        // command tokens from the tail of a sentence.
+        final List<Token> tokens = new ArrayList<>();
+        for (final String arg : args) {
+            if (arg == null) {
+                continue;
+            }
+            final String trimmed = arg.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            if (trimmed.charAt(0) == '#') {
+                tokens.add(createToken(trimmed));
+                continue;
+            }
+            Arrays.stream(trimmed.split("=")).flatMap(eqPart -> Arrays.stream(eqPart.split(","))).map(String::trim)
+                    .filter(s -> !s.isEmpty()).map(CommandDefinitionTokenizer::createToken).forEach(tokens::add);
+        }
+        return tokens;
     }
 }

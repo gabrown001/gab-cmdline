@@ -19,22 +19,23 @@
 
 package com.gabstudios.collection;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * An implementation of a Trie. Create a dictionary of words by using the add(String word ) method. This can be used to
  * get words that are similar prefix by using the getWords( String prefix ) method.
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements Trie {
 
     /**
      * The node within a Tree that holds a <code>Character</code>.
      *
-     * @author Gregory Brown (sysdevone)
+     * @author G Brown
      */
     public static class TrieNode extends Node<Character> {
         /*
@@ -173,7 +174,7 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
         // hello
         // Tests to see if the character exists in the tree.
         // -------------------
-        final LinkedList<String> data = new LinkedList<String>();
+        final LinkedList<String> data = new LinkedList<>();
 
         final StringBuilder prefixWord = new StringBuilder();
         final int count = prefix.length();
@@ -191,21 +192,17 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
             }
         }
 
-        final Stack<TrieNode> stack = new Stack<>();
+        final Deque<TrieNode> stack = new ArrayDeque<>();
         stack.push(node);
 
-        final Stack<String> prefixStack = new Stack<>();
+        final Deque<String> prefixStack = new ArrayDeque<>();
         prefixStack.push(prefixWord.toString());
 
         while (!stack.isEmpty()) {
             final TrieNode stackNode = stack.pop();
-            String rootPrefix = null;
-            if (!stackNode.isEmpty()) {
-                rootPrefix = prefixStack.pop();
-                if (stackNode.isWord()) {
-                    data.add(rootPrefix);
-                }
-
+            final String rootPrefix = prefixStack.pop();
+            if (stackNode.isWord()) {
+                data.add(rootPrefix);
             }
 
             final List<Node<Character>> children = stackNode.getChildren();
@@ -219,10 +216,6 @@ public class LinkedHashMapTrie extends LinkedHashMapTree<Character> implements T
         return (data);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.gabsocial.collection.Trie#contains(java.lang.String)
-     */
     @Override
     public boolean contains(String word) {
         if (word == null || word.isEmpty())

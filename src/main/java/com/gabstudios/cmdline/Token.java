@@ -26,7 +26,7 @@ package com.gabstudios.cmdline;
  * will be used to validate the data within a VALUE REQUIRED_LIST_VALUE = A required variable that will have one to many
  * values. OPTIONAL_LIST_VALUE = An optional variable that will have zero to many values.
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public class Token {
 
@@ -53,16 +53,6 @@ public class Token {
     /*
      * Constructor.
      */
-    protected Token(final Type type) {
-        assert (type != null) : TYPE_ERROR_STRING;
-
-        this._type = type;
-        this._value = null;
-    }
-
-    /*
-     * Constructor.
-     */
     protected Token(final Type type, final String value) {
         assert (type != null) : TYPE_ERROR_STRING;
         assert (value != null && value.length() > 0) : VALUE_ERROR_STRING;
@@ -71,10 +61,6 @@ public class Token {
         this._value = value;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
@@ -110,16 +96,12 @@ public class Token {
 
     /*
      * Get the value of the token.
-     * @return A String instance. May not be null or empty.
+     * @return A String instance. May be null if this token has no value.
      */
     protected String getValue() {
         return (this._value);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -129,10 +111,6 @@ public class Token {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return String.format("Token [_value='%s', _type='%s']", this._value, this._type);

@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class is a command definition. It is created when the CmdLine.defineCommand() is called.
+ * This class is a command definition. It is created when {@link CmdLine#defineCommand(String)} is called.
  *
- * @author Gregory Brown (sysdevone)
+ * @author G Brown
  */
 public class CommandDefinition {
     protected String _description;
@@ -61,18 +61,30 @@ public class CommandDefinition {
     }
 
     protected void addOptionalVariable(final String name) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
         this._optionalVariables.add(name);
     }
 
     protected void setOptionalVariableList(final String name) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
         this._optionalVariableListName = name;
     }
 
     protected void addRequiredVariable(final String name) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
         this._requiredVariables.add(name);
     }
 
     protected void setRequiredVariableList(final String name) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
         this._requiredVariableListName = name;
     }
 
@@ -92,10 +104,6 @@ public class CommandDefinition {
         return (this._requiredVariableListName);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
@@ -122,10 +130,6 @@ public class CommandDefinition {
         return (this._names);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -135,7 +139,7 @@ public class CommandDefinition {
     }
 
     protected boolean hasOptionalVariableLists() {
-        return (this._optionalVariableListName != null && this._optionalVariableListName.length() > 0);
+        return (this._optionalVariableListName != null && !this._optionalVariableListName.isEmpty());
     }
 
     protected boolean hasOptionalVariables() {
@@ -143,7 +147,7 @@ public class CommandDefinition {
     }
 
     protected boolean hasRequiredVariableLists() {
-        return (this._requiredVariableListName != null && this._requiredVariableListName.length() > 0);
+        return (this._requiredVariableListName != null && !this._requiredVariableListName.isEmpty());
     }
 
     protected boolean hasRequiredVariables() {
@@ -164,10 +168,6 @@ public class CommandDefinition {
         this._regexValue = regexValue;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return String.format(

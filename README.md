@@ -34,11 +34,15 @@ Use Maven to build - `mvn package`.
 Usage
 ---------
 
-In order to parse the command line, you need to define what the commands are by calling `Cmdline.defineCommand("xxx");`
+Construct a parser, then define what the commands are by calling `defineCommand("xxx")` on it.
 
 ```java
-CmdLine.defineCommand("-help, #print this message")
+CmdLine cmdLine = new CmdLine();
+cmdLine.defineCommand("-help, #print this message");
 ```
+
+Instances share no state, so two parsers can coexist and a test can build one per case
+rather than clearing a global.
 
 The string used in the defineCommand() method, contains tokens that must use one of these symbols in order for it to be recognized as that type:
 
@@ -53,6 +57,18 @@ The string used in the defineCommand() method, contains tokens that must use one
 ... = A value ends with ... and is a list for the command name. There can be zero to one defined. This can be used with the ! and ? symbols
 
 If a token does not start with one of these tokens, then it is considered a command name.  There can be one to many  names that represent a single command, such as: 'f', 'file', 'filename' or '-f', '--file', '--filename'.
+
+Three things are worth knowing before you write your first definition:
+
+* **The description runs to the end of the definition.** Everything from the first `#` is
+  description, so it may contain commas and equals signs.
+
+* **A value name is scoped to its command.** Two commands may each declare a `!file`.
+  Values are read back by that name, not by the option that carried them —
+  `--upload, !file` is read as `command.getValues("file")`.
+
+* **Parsing no arguments is not an error.** `parse(new String[0])` returns an empty list,
+  so an application that shows help in that case does not have to special-case it first.
 
 Example
 ---------
@@ -89,7 +105,8 @@ final CmdLineListener listener = new CmdLineListener();
 // define/declare the commands the parser should parse.
 // command names can start with any character that is not reserved.  reserved are !?#:
 // the commands listed below use the - (dash) to denote a command, but this is not required.
-CmdLine.defineCommand("-help, #print this message")
+CmdLine cmdLine = new CmdLine();
+cmdLine.defineCommand("-help, #print this message")
        .defineCommand("-version, #print the version information and exit")
        .defineCommand("-quiet, #be extra quiet")
        .defineCommand("-verbose, #be extra verbose")
@@ -104,7 +121,7 @@ If a -D<property>=<value> is seen on the command line, it is parsed and set
 in the System properties.  In addition, a command is created and sent to the listener.
 
 // parse the command line args and pass matching commands to the listener for processing.
-final List<command> = CmdLine.parse( args, listener );
+final List<Command> commands = cmdLine.parse( args, listener );
 ```
 Click for more [examples].
 
