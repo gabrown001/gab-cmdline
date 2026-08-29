@@ -1,39 +1,80 @@
+# SonarQube analysis is DISABLED.
+#
+# Why: the repository secret SONAR_TOKEN has expired. Every run since
+# 2025-12-20 has failed with
+#
+#     Failed to query JRE metadata ... HTTP 403 Forbidden.
+#     Please check the property sonar.token or the environment variable SONAR_TOKEN
+#
+# which is a credential problem and not a code problem: the analysis never
+# starts, so a red SonarQube check says nothing about the change that triggered
+# it. Left running, it marks every pull request failed for a reason no author
+# can act on, and a check that is always red is one people learn to ignore --
+# including on the day it goes red for a real reason.
+#
+# To re-enable: set a valid SONAR_TOKEN in the repository secrets, then delete
+# the two lines below and uncomment the workflow that follows.
+#
+# The trigger list preserved below still names feature/new-dev, which was merged
+# and deleted; drop that line when restoring.
+#
+# The job is kept parseable rather than commented out entirely, because a
+# workflow file that is nothing but comments is not a valid workflow and GitHub
+# reports it as one. workflow_dispatch means it never runs on its own.
+
 name: SonarQube
-on:
-  push:
-    branches:
-      - master
-      - feature/new-dev
-  pull_request:
-    types: [opened, synchronize, reopened]
+on: workflow_dispatch
+permissions: {}
+
 jobs:
-  build:
-    permissions:
-      contents: read
-    name: Build and analyze
+  disabled:
+    name: Disabled
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: 'zulu' # Alternative distribution options are available.
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=gabrown001_gab-cmdline
+      - run: |
+          echo "SonarQube analysis is disabled until SONAR_TOKEN is renewed."
+          echo "See the comments in .github/workflows/sonarcloud.yml."
+
+# ---------------------------------------------------------------------------
+# The analysis workflow, verbatim, to be restored once the token is valid.
+# ---------------------------------------------------------------------------
+#
+#name: SonarQube
+#on:
+#  push:
+#    branches:
+#      - master
+#      - feature/new-dev
+#  pull_request:
+#    types: [opened, synchronize, reopened]
+#jobs:
+#  build:
+#    permissions:
+#      contents: read
+#    name: Build and analyze
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+#      - name: Set up JDK 17
+#        uses: actions/setup-java@v4
+#        with:
+#          java-version: 17
+#          distribution: 'zulu' # Alternative distribution options are available.
+#      - name: Cache SonarQube packages
+#        uses: actions/cache@v4
+#        with:
+#          path: ~/.sonar/cache
+#          key: ${{ runner.os }}-sonar
+#          restore-keys: ${{ runner.os }}-sonar
+#      - name: Cache Maven packages
+#        uses: actions/cache@v4
+#        with:
+#          path: ~/.m2
+#          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: ${{ runner.os }}-m2
+#      - name: Build and analyze
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=gabrown001_gab-cmdline
