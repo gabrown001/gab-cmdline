@@ -982,6 +982,43 @@ public class CmdLineTest {
         }
     }
 
+    /*
+     * A value is not a definition. These three shapes were all destroyed before tokenizing became definition-aware, and
+     * the first one silently: a base64 credential lost its padding and produced an authentication failure that looked
+     * like the server's fault.
+     */
+    @Test
+    public void testValueKeepsEqualsPadding() {
+        this.cmdLine.defineCommand("-t, --token, !token, #Bearer token");
+        final List<Command> commands = this.cmdLine.parse(new String[] { "--token", "abc123==" });
+        Assertions.assertEquals(1, commands.size());
+        Assertions.assertEquals("abc123==", commands.get(0).getValues("token").get(0));
+    }
+
+    @Test
+    public void testValueKeepsCommas() {
+        this.cmdLine.defineCommand("-r, --reason, !text, #Why");
+        final List<Command> commands = this.cmdLine.parse(new String[] { "--reason", "fix due, SEC-4412" });
+        Assertions.assertEquals(1, commands.size());
+        Assertions.assertEquals("fix due, SEC-4412", commands.get(0).getValues("text").get(0));
+    }
+
+    @Test
+    public void testValueKeepsQueryString() {
+        this.cmdLine.defineCommand("-s, --server, !url, #Base URL");
+        final List<Command> commands = this.cmdLine.parse(new String[] { "--server", "https://x.test/p?a=1&b=2" });
+        Assertions.assertEquals(1, commands.size());
+        Assertions.assertEquals("https://x.test/p?a=1&b=2", commands.get(0).getValues("url").get(0));
+    }
+
+    @Test
+    public void testSeparatorArgumentStillIgnoredBeforeAValue() {
+        this.cmdLine.defineCommand("-t, --token, !token, #Bearer token");
+        final List<Command> commands = this.cmdLine.parse(new String[] { "--token", "=", "abc123==" });
+        Assertions.assertEquals(1, commands.size());
+        Assertions.assertEquals("abc123==", commands.get(0).getValues("token").get(0));
+    }
+
     @Test
     public void testTokenizer() {
         // file=file1.txt
