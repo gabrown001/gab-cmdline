@@ -24,6 +24,7 @@
 
 name: SonarQube
 on: workflow_dispatch
+permissions: {}
 
 jobs:
   disabled:
