@@ -446,7 +446,7 @@ public class CmdLine {
         }
 
         this.parsedCommands.clear();
-        final List<String> tokens = CmdLine.tokenize(args);
+        final List<String> tokens = this.tokenizeArguments(args);
         this.processCmdLineTokens(tokens);
 
         final List<Command> commands = new ArrayList<>(this.parsedCommands);
@@ -794,7 +794,69 @@ public class CmdLine {
     }
 
     /*
-     * Converts the command line args into String tokens.
+     * Converts the command line args into String tokens, leaving the value of an option that takes one alone. A bare
+     * argument containing '=' or ',' is indistinguishable from "name=value" or a value list unless you know whether the
+     * option before it expects a value. The context-free tokenizer below does not know, so it split every argument on
+     * both characters: "--token abc123==" became "--token abc123", silently truncating a base64 credential and
+     * producing an authentication failure that looks like the server's fault; "--reason 'fix due, SEC-4412'" became a
+     * second command named SEC-4412; and any URL carrying a query string was shredded at its first '='. This walks the
+     * arguments instead. When the previous argument names a defined command that declares a variable, the current
+     * argument is that command's value and is passed through untouched. Everything else keeps the old behaviour, so
+     * "file=file1.txt" still splits and "-file=file1.txt," still starts a value list.
+     */
+    private List<String> tokenizeArguments(final String[] args) {
+        assert (args != null) : "The parameter 'args' must not be null";
+
+        final List<String> tokens = new ArrayList<>();
+        boolean valueExpected = false;
+        for (final String arg : args) {
+            if (valueExpected) {
+                // "-f = file1.txt" writes the separator as its own argument. The context-free tokenizer dropped it by
+                // filtering empty parts; passing a value through untouched has to drop it deliberately instead, and
+                // keep waiting for the real value. A run of '=' is a separator; "abc123==" is a value.
+                if (CmdLine.isSeparatorOnly(arg)) {
+                    continue;
+                }
+                tokens.add(arg.trim());
+                valueExpected = false;
+                continue;
+            }
+            final List<String> split = CmdLine.tokenize(new String[] { arg });
+            tokens.addAll(split);
+            valueExpected = !split.isEmpty() && this.expectsValue(split.get(split.size() - 1));
+        }
+        return (tokens);
+    }
+
+    /*
+     * Whether an argument is nothing but '=' separators and whitespace.
+     */
+    private static boolean isSeparatorOnly(final String arg) {
+        final String trimmed = arg.trim();
+        if (trimmed.isEmpty()) {
+            return (true);
+        }
+        for (int i = 0; i < trimmed.length(); i++) {
+            if (trimmed.charAt(i) != '=') {
+                return (false);
+            }
+        }
+        return (true);
+    }
+
+    /*
+     * Whether a token names a defined command that takes a value. Unknown names take none: an undefined command is an
+     * error the parser reports, and swallowing the next argument first would hide it.
+     */
+    private boolean expectsValue(final String token) {
+        final CommandDefinition definition = this.commandDefinitionMap.get(token);
+        return (definition != null && (definition.hasRequiredVariables() || definition.hasOptionalVariables()
+                || definition.hasRequiredVariableLists() || definition.hasOptionalVariableLists()));
+    }
+
+    /*
+     * Converts the command line args into String tokens, without knowing what any option expects. Retained for callers
+     * that tokenize without definitions. Prefer tokenizeArguments, which does not split a value.
      */
     protected static List<String> tokenize(final String[] args) {
         assert (args != null && args.length > 0) : "The parameter 'args' must not be null or empty";
